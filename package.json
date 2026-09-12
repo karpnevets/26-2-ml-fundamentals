@@ -1,0 +1,49 @@
+{
+  "name": "ml-fundamentals-sig",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "check:content": "node scripts/check-content.mjs",
+    "check:browser": "node scripts/browser-check.mjs",
+    "format": "prettier --write app components lib scripts content/glossary.json",
+    "db:setup": "node scripts/setup-db.mjs",
+    "db:sql": "node scripts/export-db-sql.mjs",
+    "test": "tsx --test tests/*.test.ts",
+    "check:auth-browser": "node scripts/auth-browser-check.mjs",
+    "check:admin-browser": "node scripts/admin-browser-check.mjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "gray-matter": "^4.0.3",
+    "katex": "^0.16.22",
+    "next": "^15.5.12",
+    "next-auth": "5.0.0-beta.32",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0",
+    "rehype-highlight": "^7.0.2",
+    "rehype-katex": "^7.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "^4.1.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "prettier": "^3.9.6",
+    "tailwindcss": "^4.1.0",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
