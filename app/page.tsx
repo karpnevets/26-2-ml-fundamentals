@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { lessons } from "@/lib/content";
-import { OverallProgress, WeekStatus } from "@/components/progress";
+import {
+  OverallProgress,
+  WeekStatus,
+  ContinueLearning,
+} from "@/components/progress";
 import { courseAccess } from "@/lib/course";
 import { WeekLock } from "@/components/week-lock";
 export const dynamic = "force-dynamic";
@@ -17,45 +21,24 @@ export default async function Home() {
         <div>
           <p className="eyebrow site-accent">FROM YOUR FIRST MODEL TO RESNET</p>
           <h1>
-            머신러닝,
+            ML 기초
             <br />
-            하나의 질문에서
-            <br />
-            <span>시작합니다.</span>
+            <span>커리큘럼</span>
           </h1>
-          <p className="hero-description">
-            모델은 무엇을 학습할까? 왜 CNN이 필요할까?
-            <br />
-            작은 질문을 하나씩 연결하며, ResNet의 구조를
-            <br className="desktop" /> 자신의 말로 설명할 수 있을 때까지.
-          </p>
-          <Link className="primary" href="/week/1">
-            1주차 시작하기 <span>↗</span>
-          </Link>
-          <span className="hero-caption">비전공자 환영 · 기초부터 함께</span>
+          <p className="hero-description">26-2 SCSC ML Fundamentals</p>
         </div>
         <div className="hero-aside">
-          <div className="journey" aria-label="학습의 흐름">
-            <div>
-              <span>01 — 질문</span>
-              <strong>모델은 무엇을 학습할까?</strong>
-            </div>
-            <i>↓</i>
-            <div>
-              <span>02 — 탐구</span>
-              <strong>직관 → 실험 → 수식</strong>
-            </div>
-            <i>↓</i>
-            <div>
-              <span>03 — 이해</span>
-              <strong>이제, ResNet을 읽다.</strong>
-            </div>
-          </div>
           <OverallProgress
             weeks={all
               .filter((w) => weeks.includes(w.week))
               .map(({ week, concepts }) => ({ week, concepts }))}
           />
+          <ContinueLearning
+            weeks={all
+              .filter((w) => weeks.includes(w.week))
+              .map(({ week, concepts }) => ({ week, concepts }))}
+          />
+          <span className="hero-caption">비전공자 환영 · 기초부터 함께</span>
         </div>
       </section>
       <section className="curriculum" id="curriculum">

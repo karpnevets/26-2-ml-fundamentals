@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { localProgress, type ProgressValues } from "@/lib/progress-policy";
+import { nextLearning } from "@/lib/continue-learning";
 type User = { id: string; email: string; name: string; isAdmin: boolean };
 type Mode = "loading" | "local" | "guest" | "account" | "unavailable" | "error";
 type State = {
@@ -309,6 +310,26 @@ export function WeekStatus({
           ? `${n} / ${concepts.length} 개념`
           : "학습 전"}
     </span>
+  );
+}
+export function ContinueLearning({
+  weeks,
+}: {
+  weeks: { week: number; concepts: string[] }[];
+}) {
+  const { values, ready, retry, mode } = useContext(Context);
+  if (!ready)
+    return (
+      <button className="primary" disabled={mode === "loading"} onClick={retry}>
+        {mode === "loading" ? "학습 기록 확인 중…" : "학습 기록 다시 불러오기"}
+      </button>
+    );
+  const target = nextLearning(weeks, values);
+  return (
+    <Link className="primary" href={target.href}>
+      {target.label}
+      <span aria-hidden>↗</span>
+    </Link>
   );
 }
 export function OverallProgress({
