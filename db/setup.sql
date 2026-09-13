@@ -55,6 +55,9 @@ CREATE TABLE IF NOT EXISTS lesson_edits (
  updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+ALTER TABLE lesson_edits ADD COLUMN IF NOT EXISTS colab_url text;
+-- NULL uses the course notebook. Empty string hides the practice button.
+
 INSERT INTO learning_items(id,week,kind,label) VALUES
 ('w0:Python',0,'concept','Python'),
 ('w0:NumPy',0,'concept','NumPy'),

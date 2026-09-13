@@ -40,6 +40,10 @@ try {
   await page.goto(base + "/week/2");
   assert(!(await page.content()).includes("좋은 parameter를 효율적으로"));
   await expect(page).toHaveTitle(/잠긴 주차/);
+  await expect(page.getByRole('link',{name:'Colab에서 실습하기 ↗'})).toHaveCount(0);
+  await page.goto(base+'/week/1');
+  await expect(page.getByRole('link',{name:'Colab에서 실습하기 ↗'})).toHaveAttribute('href','https://colab.research.google.com/github/karpnevets/26-2-ml-fundamentals/blob/main/notebooks/week-1.ipynb');
+  await page.goto(base+'/week/2');
   await page.screenshot({ path: "qa/week-locked.png", fullPage: true });
   await page.goto(base + "/assignments");
   await expect(page.locator("main")).not.toContainText("Linear Classification");
@@ -138,6 +142,8 @@ try {
   ).toBeVisible();
   await page.screenshot({ path: "qa/quiz-editor.png", fullPage: true });
   await page.getByRole("button", { name: "학습 본문", exact: true }).click();
+  await expect(page.getByLabel('Colab 실습 링크')).toHaveValue(/week-2.ipynb$/);
+  await page.getByLabel('Colab 실습 링크').fill('https://colab.research.google.com/drive/custom-notebook');
   await page
     .getByRole("combobox", { name: "실험 삽입" })
     .selectOption("gradient");
@@ -157,6 +163,11 @@ try {
     "본문을 저장했습니다",
   );
   assert.equal(payload.kind, "lesson");
+  assert.equal(payload.colabUrl,'https://colab.research.google.com/drive/custom-notebook');
+  await page.getByLabel('Colab 실습 링크').fill('');
+  await page.getByRole('button',{name:'본문 저장',exact:true}).click();
+  await expect(page.locator('.editor-message')).toContainText('본문을 저장했습니다');
+  await expect.poll(()=>payload.colabUrl).toBe('');
   assert(payload.body.includes("gradient"));
   await page.screenshot({ path: "qa/body-editor.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
@@ -167,7 +178,7 @@ try {
   );
   await page.screenshot({ path: "qa/body-editor-mobile.png", fullPage: true });
   console.log(
-    "PASS: anonymous gates, hidden titles, hint navigation, modal keyboard, API auth/origin, actual editor with browser-only mock saves, conflict retention, visualization and responsive layout.",
+    "PASS: anonymous gates, hidden titles and Colab links, hint navigation, modal keyboard, API auth/origin, editor mock saves, custom/hidden Colab URL, conflict retention, visualization and responsive layout.",
   );
 } finally {
   await browser.close();

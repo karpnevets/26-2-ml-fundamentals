@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { LessonMarkdown } from "./markdown";
 import { visualizationOptions } from "@/lib/visualizations";
 import type { QuizQuestion } from "@/lib/course-policy";
+import { defaultColabUrl } from "@/lib/colab";
 type Quiz = {
   questions: QuizQuestion[];
   instructions: string;
@@ -13,6 +14,7 @@ export function CourseEditor({
   week,
   original,
   initialBody,
+  initialColabUrl,
   bodyRevision,
   initialQuiz,
   hasPassword,
@@ -20,6 +22,7 @@ export function CourseEditor({
   week: number;
   original: string;
   initialBody: string;
+  initialColabUrl?: string;
   bodyRevision: number;
   initialQuiz: Quiz;
   hasPassword: boolean;
@@ -29,6 +32,9 @@ export function CourseEditor({
   );
   const [body, setBody] = useState(initialBody),
     [revision, setRevision] = useState(bodyRevision);
+  const [colabUrl, setColabUrl] = useState(
+    initialColabUrl ?? defaultColabUrl(week),
+  );
   const [quiz, setQuiz] = useState(initialQuiz),
     [password, setPassword] = useState(""),
     [hasPass, setHasPass] = useState(hasPassword);
@@ -72,7 +78,7 @@ export function CourseEditor({
     try {
       const payload =
         kind === "lesson"
-          ? { kind, body, revision }
+          ? { kind, body, revision, colabUrl }
           : { kind, ...quiz, password };
       const res = await fetch(`/api/admin/course/${week}`, {
         method: "PUT",
@@ -128,6 +134,31 @@ export function CourseEditor({
       </p>
       {tab === "lesson" ? (
         <>
+          <label className="editor-field">
+            Colab 실습 링크
+            <input
+              type="url"
+              value={colabUrl}
+              maxLength={2000}
+              placeholder="https://colab.research.google.com/…"
+              onChange={(e) => {
+                setColabUrl(e.target.value);
+                setDirtyLesson(true);
+              }}
+            />
+          </label>
+          <p>
+            기본 주차별 노트북이 연결되어 있습니다. 다른 Colab 링크로 바꾸거나
+            비워서 버튼을 숨길 수 있습니다. 본문 저장을 누르면 함께 적용됩니다.
+          </p>
+          <button
+            onClick={() => {
+              setColabUrl(defaultColabUrl(week));
+              setDirtyLesson(true);
+            }}
+          >
+            기본 노트북 연결
+          </button>
           <p>
             Markdown 본문을 편집합니다. 제목·개념 체크 항목은 기존 값을
             유지합니다. 수식, 이미지 링크, 코드 블록과 아래 실험 삽입을

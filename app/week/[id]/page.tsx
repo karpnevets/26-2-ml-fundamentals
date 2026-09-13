@@ -67,6 +67,29 @@ export default async function Week({
           <WeekStatus week={w.week} concepts={w.concepts} />
         </div>
       </header>
+      {w.colabUrl && (
+        <section className="panel colab-practice" aria-label="코드 실습">
+          <div>
+            <h2>직접 코드로 확인하기</h2>
+            <p>
+              Colab에서 Drive에 사본을 저장한 뒤, 결과를 예상하고 코드를
+              실행·수정해 보세요. 실습 후 이 페이지로 돌아와 학습 기록을
+              체크하세요.
+            </p>
+            <p className="muted">
+              실행 결과와 완료 여부는 사이트에 자동 전송되지 않습니다.
+            </p>
+          </div>
+          <a
+            className="primary"
+            href={w.colabUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Colab에서 실습하기 ↗
+          </a>
+        </section>
+      )}
       <div className="lesson-layout">
         <TableOfContents
           sections={parts

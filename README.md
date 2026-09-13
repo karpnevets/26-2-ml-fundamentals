@@ -76,6 +76,8 @@ qa/                     # 브라우저 검증 스크린샷
 
 ## 로그인·배포
 
+주차별 실행 가능한 노트북은 `notebooks/week-0.ipynb`–`week-8.ipynb`입니다. 열린 강의에서 **Colab에서 실습하기**로 접근합니다. 관리자 본문 탭에서 링크를 변경/숨기려면 `db/migrations/003_colab_links.sql`을 한 번 적용하세요. 기존 DB에서도 기본 링크 조회는 동작합니다. [노트북 사용법](notebooks/README.md)
+
 2–8주차는 계정별 퀴즈 암호로 순차 해제합니다. 관리자 `/admin/course`에서 회차별 퀴즈와 Markdown 본문을 편집하고 인터랙티브 실험을 삽입할 수 있습니다. 기존 DB에는 `db/migrations/002_course_editor.sql`을 적용하세요. [퀴즈·편집 사용법](docs/COURSE-EDITOR.md)을 확인하세요.
 
 직접 해야 할 설정은 [Google·Neon·Vercel 배포 안내](docs/DEPLOYMENT.md)를 따르세요. 구현 구조와 검증은 [인증·DB 문서](docs/AUTH-IMPLEMENTATION.md)에 정리되어 있습니다. 새 관리자 화면은 `/admin`, 로그인은 `/login`, 개인정보 안내는 `/privacy`입니다.

@@ -4,6 +4,7 @@ import { query } from "@/lib/query";
 import { json, smallJson } from "@/lib/http";
 import { validWeek, validateQuiz } from "@/lib/course-policy";
 import { hashPassword } from "@/lib/quiz-password";
+import { validColabUrl } from "@/lib/colab";
 export const dynamic = "force-dynamic";
 export async function PUT(
   request: Request,
@@ -25,6 +26,14 @@ export async function PUT(
     }
     let saved;
     if (data?.kind === "lesson") {
+      if (!validColabUrl(data.colabUrl))
+        return json(
+          {
+            error:
+              "Colab의 https://colab.research.google.com/github/… 또는 /drive/… 주소를 입력하세요. 비워 두면 실습 버튼을 숨깁니다.",
+          },
+          400,
+        );
       if (
         typeof data.body !== "string" ||
         !data.body.trim() ||
@@ -39,12 +48,12 @@ export async function PUT(
       saved =
         data.revision === 0
           ? await query(
-              "INSERT INTO lesson_edits(week,body) VALUES($1,$2) ON CONFLICT DO NOTHING RETURNING revision",
-              [week, data.body],
+              "INSERT INTO lesson_edits(week,body,colab_url) VALUES($1,$2,$3) ON CONFLICT DO NOTHING RETURNING revision",
+              [week, data.body, data.colabUrl],
             )
           : await query(
-              "UPDATE lesson_edits SET body=$2,revision=revision+1,updated_at=now() WHERE week=$1 AND revision=$3 RETURNING revision",
-              [week, data.body, data.revision],
+              "UPDATE lesson_edits SET body=$2,colab_url=$4,revision=revision+1,updated_at=now() WHERE week=$1 AND revision=$3 RETURNING revision",
+              [week, data.body, data.revision, data.colabUrl],
             );
     } else if (data?.kind === "quiz" && week >= 2) {
       const draft = validateQuiz(data);

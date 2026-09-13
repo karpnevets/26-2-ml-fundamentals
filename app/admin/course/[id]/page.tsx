@@ -6,6 +6,7 @@ import { query } from "@/lib/query";
 import { quizTemplate } from "@/lib/quiz-templates";
 import { CourseEditor } from "@/components/course-editor";
 import type { QuizQuestion } from "@/lib/course-policy";
+import { defaultColabUrl } from "@/lib/colab";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "회차 편집",
@@ -28,7 +29,7 @@ export default async function Page({
   const lesson = lessons().find((w) => String(w.week) === id);
   if (!lesson) notFound();
   const [edit] = await query(
-    "SELECT body,revision FROM lesson_edits WHERE week=$1",
+    "SELECT body,revision,to_jsonb(lesson_edits)->>'colab_url' AS colab_url FROM lesson_edits WHERE week=$1",
     [lesson.week],
   );
   const [quiz] = await query(
@@ -53,6 +54,9 @@ export default async function Page({
         week={lesson.week}
         original={lesson.body}
         initialBody={String(edit?.body ?? lesson.body)}
+        initialColabUrl={String(
+          edit?.colab_url ?? defaultColabUrl(lesson.week),
+        )}
         bodyRevision={Number(edit?.revision ?? 0)}
         initialQuiz={initialQuiz}
         hasPassword={Boolean(quiz?.has_password)}
