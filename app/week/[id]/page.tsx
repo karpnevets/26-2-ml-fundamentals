@@ -56,7 +56,7 @@ export default async function Week({
         <span>Week {w.week}</span>
       </div>
       <header className="lesson-header">
-        <span className="eyebrow accent">
+        <span className="eyebrow site-accent">
           WEEK {String(w.week).padStart(2, "0")}{" "}
           {w.week === 0 ? "· OPTIONAL" : "/ 08"}
         </span>

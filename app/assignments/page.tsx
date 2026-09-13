@@ -13,7 +13,7 @@ export default async function Page() {
   return (
     <div className="page narrow">
       <header className="subpage-header">
-        <span className="eyebrow accent">MAKE IT YOUR OWN</span>
+        <span className="eyebrow site-accent">MAKE IT YOUR OWN</span>
         <h1>선택 과제</h1>
         <p>
           Check로 확인하고, Apply로 써 보고, Explore로 더 깊이.

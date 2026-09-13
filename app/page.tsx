@@ -15,7 +15,7 @@ export default async function Home() {
       </div>
       <section className="hero">
         <div>
-          <p className="eyebrow accent">FROM YOUR FIRST MODEL TO RESNET</p>
+          <p className="eyebrow site-accent">FROM YOUR FIRST MODEL TO RESNET</p>
           <h1>
             머신러닝,
             <br />

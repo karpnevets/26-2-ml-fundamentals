@@ -25,7 +25,7 @@ export default async function Page({
   return (
     <div className="page narrow">
       <section className="login-panel panel">
-        <span className="eyebrow accent">SCSC · SCHOOL ACCOUNT</span>
+        <span className="eyebrow site-accent">SCSC · SCHOOL ACCOUNT</span>
         <h1>학교 계정으로 이어서 학습하기</h1>
         <p>
           서울대학교에서 관리하는 <strong>@snu.ac.kr</strong> Google 계정으로

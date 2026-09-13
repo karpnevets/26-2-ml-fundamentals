@@ -174,7 +174,7 @@ summary::marker {
   font-weight: 600;
   color: var(--muted);
 }
-.accent {
+.site-accent {
   color: var(--accent);
 }
 .hero {

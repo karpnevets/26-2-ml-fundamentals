@@ -48,7 +48,7 @@ export default async function Page() {
     return (
       <div className="page admin-page">
         <header className="subpage-header">
-          <span className="eyebrow accent">SIG · ADMIN</span>
+          <span className="eyebrow site-accent">SIG · ADMIN</span>
           <h1>학습 진행 현황</h1>
           <p>어디까지 이해했는지, 어느 주차에서 도움이 필요한지 살펴보세요.</p>
           <Link className="primary" href="/admin/course">
