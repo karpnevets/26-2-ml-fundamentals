@@ -20,7 +20,7 @@ export async function unlockWeek(
     return { error: "직전 주차를 먼저 열어 주세요.", status: 403 };
   if (weeks.includes(week)) return { ok: true, status: 200 };
   const [quiz] = await query(
-    "SELECT password_hash FROM week_quizzes WHERE week=$1 AND published=true",
+    "SELECT password_hash FROM week_quizzes WHERE to_jsonb(week_quizzes)->>'content_revision'='revised-v2' AND week=$1 AND published=true",
     [week],
   );
   if (!quiz)

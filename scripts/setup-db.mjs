@@ -19,7 +19,7 @@ try {
     sql.query(seedSql, [JSON.stringify(catalog())]),
   ]);
   console.log(
-    `DB 준비 완료: 회원/진행도 테이블 및 ${catalog().length}개 학습 항목. 기존 회원과 기록은 유지됩니다.`,
+    `DB 준비 완료: 회원/진행도 테이블 및 ${catalog().length}개 학습 항목. 회원·잠금은 유지되며 개정 이전 기록과 수정본은 백업 후 이관됩니다.`,
   );
 } catch {
   console.error(

@@ -1,21 +1,14 @@
 ---
-title: CNN & Image Inductive Bias
+title: "CNN & Image Inductive Bias"
 week: 7
-question: 이미지가 가진 공간적 구조를 모델 architecture에 어떻게 반영할까?
-concepts:
-  - Image Tensor
-  - Convolution
-  - Kernel
-  - Feature Map
-  - Stride
-  - Padding
-  - Channel
-  - Pooling
-  - Receptive Field
-  - Inductive Bias
-estimated_time: 150–180 min
+question: "이미지가 가진 공간적 구조를 모델 architecture에 어떻게 반영할까?"
+concepts: ["Image Tensor", "Convolution", "Kernel", "Feature Map", "Stride", "Padding", "Channel", "Pooling", "Receptive Field", "Inductive Bias"]
+estimated_time: "150–180 min"
 ---
-### 7.1 이번 주의 출발점
+
+# Week 7 — CNN & Image Inductive Bias
+
+## 7.1 이번 주의 출발점
 
 Week 5에서 MLP는 vector input을 처리했다.
 
@@ -41,19 +34,19 @@ Week 5에서 MLP는 vector input을 처리했다.
 
 ---
 
-### 7.2 이미지는 단순한 숫자 목록이 아니다
+## 7.2 이미지는 단순한 숫자 목록이 아니다
 
 이미지에는 최소 세 가지 중요한 구조가 있다.
 
-#### Locality
+### Locality
 
 가까운 pixel들끼리 함께 edge, corner, texture 같은 local pattern을 만든다.
 
-#### Spatial arrangement
+### Spatial arrangement
 
 같은 pixel 값이라도 어디에 배치되어 있는지가 중요하다.
 
-#### Repeated patterns
+### Repeated patterns
 
 수직선, 곡선, texture 같은 pattern은 이미지의 여러 위치에서 나타날 수 있다.
 
@@ -61,9 +54,9 @@ Week 5에서 MLP는 vector input을 처리했다.
 
 ---
 
-## 1. Inductive Bias
+# 1. Inductive Bias
 
-### 7.3 Inductive bias란?
+## 7.3 Inductive bias란?
 
 모델은 유한한 training data만 보고 새로운 data에 대해 일반화해야 한다.
 
@@ -79,9 +72,9 @@ CNN은 이미지에 대해 대략 다음 가정을 구조에 넣는다.
 
 ---
 
-## 2. 이미지 Tensor
+# 2. 이미지 Tensor
 
-### 7.4 Channel, Height, Width
+## 7.4 Channel, Height, Width
 
 RGB 이미지는 각 위치마다 세 숫자를 가진다.
 
@@ -132,9 +125,9 @@ shape를 사용한다.
 
 ---
 
-## 3. Convolution의 핵심 아이디어
+# 3. Convolution의 핵심 아이디어
 
-### 7.5 작은 영역만 본다
+## 7.5 작은 영역만 본다
 
 CNN은 한 output을 계산할 때 input 전체를 한 번에 연결하지 않고 작은 local window를 본다.
 
@@ -154,7 +147,7 @@ Input image
 
 ---
 
-### 7.6 2D single-channel 계산
+## 7.6 2D single-channel 계산
 
 single-channel input \(X\)와 kernel \(K\)가 있다고 하자.
 
@@ -174,7 +167,7 @@ deep learning library에서 흔히 `convolution`이라고 부르는 연산은 �
 
 ---
 
-### 7.7 작은 숫자 예시
+## 7.7 작은 숫자 예시
 
 input 일부가:
 
@@ -225,9 +218,9 @@ K=
 
 ---
 
-## 4. Weight sharing
+# 4. Weight sharing
 
-### 7.8 같은 kernel을 모든 위치에서 사용한다
+## 7.8 같은 kernel을 모든 위치에서 사용한다
 
 CNN의 중요한 특징은 한 kernel을 한 위치에서만 쓰지 않는다는 것이다.
 
@@ -244,7 +237,7 @@ position 3 → same kernel
 
 ---
 
-### 7.9 parameter 수 비교
+## 7.9 parameter 수 비교
 
 예를 들어 \(32\times32\times3\) 이미지를 100개의 hidden unit에 fully connected한다고 하자.
 
@@ -270,9 +263,9 @@ bias까지 고려해도 차이가 매우 크다.
 
 ---
 
-## 5. 여러 channel과 여러 filter
+# 5. 여러 channel과 여러 filter
 
-### 7.10 한 output channel은 모든 input channel을 본다
+## 7.10 한 output channel은 모든 input channel을 본다
 
 input이 RGB라면 kernel도 channel 방향 깊이를 가진다.
 
@@ -314,7 +307,7 @@ nn.Conv2d(
 
 ---
 
-### 7.11 Feature map
+## 7.11 Feature map
 
 convolution의 output channel 하나를 feature map이라고 부를 수 있다.
 
@@ -326,17 +319,17 @@ CNN은 loss를 줄이는 데 유용한 representation을 학습한다.
 
 ---
 
-## 6. Stride와 Padding
+# 6. Stride와 Padding
 
-### 7.12 Stride
+## 7.12 Stride
 
 stride는 kernel을 몇 칸씩 이동할지 정한다.
 
-#### stride = 1
+### stride = 1
 
 한 칸씩 이동한다.
 
-#### stride = 2
+### stride = 2
 
 두 칸씩 이동한다.
 
@@ -344,7 +337,7 @@ stride가 커지면 output spatial size가 줄어든다.
 
 ---
 
-### 7.13 Padding
+## 7.13 Padding
 
 kernel을 그대로 적용하면 이미지 가장자리에서 window를 만들 수 없으므로 output 크기가 줄어든다.
 
@@ -364,7 +357,7 @@ padding을 적절히 사용하면 stride 1에서 spatial size를 유지할 수 �
 
 ---
 
-### 7.14 Output spatial size 공식
+## 7.14 Output spatial size 공식
 
 1차원 축 하나에 대해 input size \(H\), kernel size \(K\), padding \(P\), stride \(S\)일 때 output size는:
 
@@ -383,7 +376,7 @@ width도 같은 방식이다.
 <details>
 <summary>예시: 32×32 image에 3×3 kernel</summary>
 
-#### padding 0, stride 1
+### padding 0, stride 1
 
 \[
 H_{out}=\frac{32-3}{1}+1=30
@@ -391,7 +384,7 @@ H_{out}=\frac{32-3}{1}+1=30
 
 따라서 \(30\times30\)이 된다.
 
-#### padding 1, stride 1
+### padding 1, stride 1
 
 \[
 H_{out}=\frac{32+2-3}{1}+1=32
@@ -399,7 +392,7 @@ H_{out}=\frac{32+2-3}{1}+1=32
 
 spatial size가 유지된다.
 
-#### padding 1, stride 2
+### padding 1, stride 2
 
 \[
 H_{out}
@@ -413,15 +406,15 @@ H_{out}
 
 ---
 
-## 7. Convolution의 inductive bias
+# 7. Convolution의 inductive bias
 
-### 7.15 Local connectivity
+## 7.15 Local connectivity
 
 한 output unit은 input 전체가 아니라 작은 local region과 연결된다.
 
 이는 이미지에서 가까운 pixel 관계가 중요하다는 가정이다.
 
-### 7.16 Weight sharing
+## 7.16 Weight sharing
 
 같은 filter를 모든 위치에서 사용한다.
 
@@ -431,7 +424,7 @@ H_{out}
 
 ---
 
-### 7.17 Translation equivariance
+## 7.17 Translation equivariance
 
 input pattern이 이동하면 feature map의 반응도 비슷하게 이동하는 성질을 translation equivariance라고 한다.
 
@@ -454,9 +447,9 @@ classification network는 pooling, downsampling, global aggregation 등을 통�
 
 ---
 
-## 8. Pooling
+# 8. Pooling
 
-### 7.18 Max pooling
+## 7.18 Max pooling
 
 대표적으로 \(2\times2\) max pooling은 각 local window에서 가장 큰 값을 선택한다.
 
@@ -480,7 +473,7 @@ pooling은 학습 parameter가 없는 경우가 많다.
 
 ---
 
-### 7.19 Downsampling의 의미
+## 7.19 Downsampling의 의미
 
 resolution을 줄이면 세밀한 위치 정보는 일부 잃을 수 있다.
 
@@ -490,9 +483,9 @@ CNN architecture는 **어디에서 얼마나 downsampling할지**도 중요한 �
 
 ---
 
-## 9. Receptive field
+# 9. Receptive field
 
-### 7.20 한 unit이 원본 이미지의 어디까지 보는가?
+## 7.20 한 unit이 원본 이미지의 어디까지 보는가?
 
 첫 \(3\times3\) convolution의 output unit은 원본의 \(3\times3\) 영역을 본다.
 
@@ -514,9 +507,9 @@ stride 1, padding을 적절히 사용한 \(3\times3\) conv를 두 번 쌓으면 
 
 ---
 
-## 10. Feature hierarchy
+# 10. Feature hierarchy
 
-### 7.21 왜 깊은 layer에서 더 복잡한 pattern을 볼 수 있을까?
+## 7.21 왜 깊은 layer에서 더 복잡한 pattern을 볼 수 있을까?
 
 초기 layer는 작은 receptive field를 가지므로 local pattern을 주로 처리한다.
 
@@ -540,9 +533,9 @@ local edge / texture-like response
 
 ---
 
-## 11. CNN도 결국 Week 5의 학습 가능한 transformation이다
+# 11. CNN도 결국 Week 5의 학습 가능한 transformation이다
 
-### 7.22 Conv weight도 parameter다
+## 7.22 Conv weight도 parameter다
 
 convolution kernel의 값은 학습되는 parameter다.
 
@@ -576,9 +569,9 @@ CNN은 "손으로 만든 edge filter 모음"이 아니라 **convolution이라는
 
 ---
 
-## 12. MLP와 CNN 비교
+# 12. MLP와 CNN 비교
 
-### 7.23 무엇이 다른가?
+## 7.23 무엇이 다른가?
 
 | 관점 | MLP | CNN |
 |---|---|---|
@@ -594,7 +587,7 @@ CNN도 Linear/Activation/Backpropagation이라는 Week 5의 원리 위에 있다
 
 ---
 
-## 13. PyTorch Conv2d 읽기
+# 13. PyTorch Conv2d 읽기
 
 ```python
 conv = nn.Conv2d(
@@ -636,7 +629,7 @@ x = torch.relu(x)
 
 ---
 
-### 7.24 간단한 CNN shape 추적
+## 7.24 간단한 CNN shape 추적
 
 ```python
 model = nn.Sequential(
@@ -670,7 +663,7 @@ CNN 코드를 읽을 때 매 layer마다 **channel과 spatial size를 따로 추
 
 ---
 
-## Checkpoint
+# Checkpoint
 
 1. 이미지를 flatten해 MLP에 넣는 것이 가능한데도 CNN을 사용하는 이유는?
 2. inductive bias를 자신의 말로 설명해보자.
@@ -686,9 +679,9 @@ CNN 코드를 읽을 때 매 layer마다 **channel과 spatial size를 따로 추
 
 ---
 
-## 선택 과제
+# 선택 과제
 
-### [Check] Shape 계산
+## [Check] Shape 계산
 
 입력:
 
@@ -704,7 +697,7 @@ nn.Conv2d(3, 32, kernel_size=5, stride=2, padding=2)
 
 output shape를 계산한다.
 
-### [Check] Parameter 수
+## [Check] Parameter 수
 
 ```python
 nn.Conv2d(3, 16, kernel_size=3, bias=True)
@@ -718,11 +711,11 @@ nn.Conv2d(3, 16, kernel_size=3, bias=True)
 C_{out}C_{in}K_HK_W+C_{out}
 \]
 
-### [Apply] Convolution 손계산
+## [Apply] Convolution 손계산
 
 작은 \(4\times4\) input과 \(2\times2\) kernel을 직접 정해 stride 1, padding 0의 output 전체를 계산한다.
 
-### [Apply] Shape tracing
+## [Apply] Shape tracing
 
 CNN architecture 하나를 정하고 각 layer의:
 
@@ -735,7 +728,7 @@ W
 
 를 표로 정리한다.
 
-### [Explore] MLP vs CNN parameter 수
+## [Explore] MLP vs CNN parameter 수
 
 같은 \(32\times32\times3\) image input에 대해:
 
@@ -748,7 +741,7 @@ W
 
 ---
 
-## 이번 주 한 장 요약
+# 이번 주 한 장 요약
 
 ```text
 Image
@@ -771,7 +764,7 @@ learned representation이 조합된다.
 Backpropagation으로 학습된다.
 ```
 
-## 다음 주 Preview
+# 다음 주 Preview
 
 CNN을 여러 layer 쌓으면 더 복잡한 representation을 만들 수 있다.
 

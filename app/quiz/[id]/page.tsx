@@ -42,7 +42,7 @@ export default async function Page({
       </div>
     );
   const [quiz] = await query(
-    "SELECT questions,instructions FROM week_quizzes WHERE week=$1 AND published=true",
+    "SELECT questions,instructions FROM week_quizzes WHERE to_jsonb(week_quizzes)->>'content_revision'='revised-v2' AND week=$1 AND published=true",
     [week],
   );
   return (

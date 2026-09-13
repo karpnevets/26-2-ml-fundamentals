@@ -66,7 +66,7 @@ export async function PUT(
           400,
         );
       const [old] = await query(
-        "SELECT password_hash FROM week_quizzes WHERE week=$1",
+        "SELECT password_hash FROM week_quizzes WHERE to_jsonb(week_quizzes)->>'content_revision'='revised-v2' AND week=$1",
         [week],
       );
       const hash = draft.password

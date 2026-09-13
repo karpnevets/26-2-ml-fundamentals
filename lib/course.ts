@@ -22,7 +22,7 @@ export async function editedLessons() {
   }));
   if (!process.env.DATABASE_URL) return all;
   const edits = await query(
-    "SELECT week,body,to_jsonb(lesson_edits)->>'colab_url' AS colab_url FROM lesson_edits",
+    "SELECT week,body,to_jsonb(lesson_edits)->>'colab_url' AS colab_url FROM lesson_edits WHERE to_jsonb(lesson_edits)->>'content_revision'='revised-v2'",
   );
   return all.map((w) => ({
     ...w,

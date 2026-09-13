@@ -1,19 +1,14 @@
 ---
-title: Residual Learning & ResNet
+title: "Residual Learning & ResNet"
 week: 8
-question: 깊은 CNN이 기존 정보를 잃지 않으면서 더 쉽게 학습되도록 만들 수 있을까?
-concepts:
-  - Deep Network
-  - Degradation
-  - Residual Function
-  - Skip Connection
-  - Identity Mapping
-  - Gradient Path
-  - Batch Normalization
-  - ResNet BasicBlock
-estimated_time: 150–180 min
+question: "깊은 CNN이 기존 정보를 잃지 않으면서 더 쉽게 학습되도록 만들 수 있을까?"
+concepts: ["Deep Network", "Degradation", "Residual Function", "Skip Connection", "Identity Mapping", "Gradient Path", "Batch Normalization", "ResNet BasicBlock"]
+estimated_time: "150–180 min"
 ---
-### 8.1 마지막 주의 목표
+
+# Week 8 — Residual Learning & ResNet
+
+## 8.1 마지막 주의 목표
 
 지금까지 배운 흐름을 다시 보자.
 
@@ -37,9 +32,9 @@ Week 7  CNN / Image Inductive Bias
 
 ---
 
-## 1. 왜 network를 깊게 만들까?
+# 1. 왜 network를 깊게 만들까?
 
-### 8.2 깊이는 representation의 composition을 늘린다
+## 8.2 깊이는 representation의 composition을 늘린다
 
 Week 7에서 CNN layer가 local pattern을 조합해 더 넓은 receptive field와 더 복잡한 representation을 만들 수 있다고 배웠다.
 
@@ -63,9 +58,9 @@ higher-level representation
 
 ---
 
-## 2. 깊은 network에서 gradient는 어떻게 전달되는가?
+# 2. 깊은 network에서 gradient는 어떻게 전달되는가?
 
-### 8.3 Chain rule이 길어진다
+## 8.3 Chain rule이 길어진다
 
 여러 layer를:
 
@@ -96,7 +91,7 @@ scalar 직관으로 보면 작은 derivative가 반복해서 곱해질 때 gradi
 
 ---
 
-### 8.4 그러나 ResNet을 vanishing gradient 하나로만 설명하면 부족하다
+## 8.4 그러나 ResNet을 vanishing gradient 하나로만 설명하면 부족하다
 
 깊은 network의 optimization 문제를 "gradient가 사라져서"라고만 설명하면 중요한 부분을 놓친다.
 
@@ -117,9 +112,9 @@ ResNet 논문에서 강조된 관찰 중 하나는 **degradation problem**이다
 
 ---
 
-## 3. Residual Learning
+# 3. Residual Learning
 
-### 8.5 직접 mapping을 학습하는 방식
+## 8.5 직접 mapping을 학습하는 방식
 
 기존 block이 input \(x\)를 desired output \(H(x)\)로 바꾸어야 한다고 하자.
 
@@ -133,7 +128,7 @@ H(x)
 
 ---
 
-### 8.6 Residual function
+## 8.6 Residual function
 
 ResNet은 다음 residual을 정의한다.
 
@@ -165,7 +160,7 @@ y=x+F(x)
 
 ---
 
-### 8.7 Identity mapping이 쉬워진다
+## 8.7 Identity mapping이 쉬워진다
 
 만약 어떤 block에서 input을 거의 그대로 통과시키는 것이 최선이라면 desired mapping은:
 
@@ -197,9 +192,9 @@ y=x+0=x
 
 ---
 
-## 4. Skip connection
+# 4. Skip connection
 
-### 8.8 두 경로
+## 8.8 두 경로
 
 Residual block은 두 경로를 가진다.
 
@@ -225,9 +220,9 @@ input이 intermediate transformation을 건너뛰어 직접 이동하는 연결�
 
 ---
 
-## 5. Gradient 관점
+# 5. Gradient 관점
 
-### 8.9 residual block의 derivative
+## 8.9 residual block의 derivative
 
 \[
 y=x+F(x)
@@ -238,7 +233,7 @@ y=x+F(x)
 \[
 \frac{\partial y}{\partial x}
 =
-I+\frac{\partial F}{\partial x}
+I+rac{\partial F}{\partial x}
 \]
 
 이다.
@@ -250,7 +245,7 @@ loss gradient는:
 =
 \frac{\partial L}{\partial y}
 \left(
-I+\frac{\partial F}{\partial x}
+I+rac{\partial F}{\partial x}
 \right)
 \]
 
@@ -272,7 +267,7 @@ residual branch의 derivative만 통과해야 하는 것이 아니라 identity �
 
 ---
 
-### 8.10 여러 residual block을 연속해서 보면
+## 8.10 여러 residual block을 연속해서 보면
 
 단순화하여:
 
@@ -296,9 +291,9 @@ x_L=x_0+\sum_{l=0}^{L-1}F_l(x_l)
 
 ---
 
-## 6. 실제 BasicBlock
+# 6. 실제 BasicBlock
 
-### 8.11 ResNet BasicBlock 구조
+## 8.11 ResNet BasicBlock 구조
 
 ResNet-18/34 계열의 기본적인 block을 단순화하면:
 
@@ -326,7 +321,7 @@ block 내부의 convolution weight와 BatchNorm parameter는 학습된다.
 
 ---
 
-### 8.12 Shape가 같아야 더할 수 있다
+## 8.12 Shape가 같아야 더할 수 있다
 
 \[
 y=F(x)+x
@@ -356,7 +351,7 @@ spatial 56×56 → 28×28
 
 ---
 
-### 8.13 Projection shortcut
+## 8.13 Projection shortcut
 
 shape가 다르면 skip path에 \(1\times1\) convolution을 사용할 수 있다.
 
@@ -386,9 +381,9 @@ skip branch:
 
 ---
 
-## 7. 왜 1×1 convolution이 channel을 바꿀 수 있는가?
+# 7. 왜 1×1 convolution이 channel을 바꿀 수 있는가?
 
-### 8.14 spatial window는 1×1이지만 channel은 모두 본다
+## 8.14 spatial window는 1×1이지만 channel은 모두 본다
 
 \(1\times1\) convolution은 공간적으로는 한 pixel 위치만 본다.
 
@@ -410,9 +405,9 @@ projection shortcut에 적합한 이유다.
 
 ---
 
-## 8. Batch Normalization
+# 8. Batch Normalization
 
-### 8.15 왜 ResNet block에 BatchNorm이 보이는가?
+## 8.15 왜 ResNet block에 BatchNorm이 보이는가?
 
 ResNet architecture를 읽으려면 BatchNorm을 "deep network를 안정화하는 뭔가" 정도로만 넘기면 부족하다.
 
@@ -433,7 +428,7 @@ BatchNorm은 mini-batch에서 activation의 통계를 이용해 feature를 정�
 그 다음:
 
 \[
-\hat x_i=\frac{x_i-\mu_B}{\sqrt{\sigma_B^2+\epsilon}}
+\hat x_i=rac{x_i-\mu_B}{\sqrt{\sigma_B^2+\epsilon}}
 \]
 
 로 정규화한다.
@@ -454,7 +449,7 @@ y_i=\gamma\hat x_i+\beta
 
 ---
 
-### 8.16 BatchNorm은 정보를 완전히 고정하지 않는다
+## 8.16 BatchNorm은 정보를 완전히 고정하지 않는다
 
 정규화 후 \(\gamma,\beta\)를 학습하므로 network가 필요한 scale과 shift를 다시 표현할 수 있다.
 
@@ -462,7 +457,7 @@ y_i=\gamma\hat x_i+\beta
 
 ---
 
-### 8.17 Training과 evaluation에서 동작이 다르다
+## 8.17 Training과 evaluation에서 동작이 다르다
 
 training 중에는 현재 batch의 통계를 사용하면서 running mean/variance를 갱신한다.
 
@@ -481,9 +476,9 @@ model.eval()
 
 ---
 
-## 9. Residual block을 PyTorch 코드로 읽기
+# 9. Residual block을 PyTorch 코드로 읽기
 
-### 8.18 간단한 BasicBlock
+## 8.18 간단한 BasicBlock
 
 ```python
 class BasicBlock(nn.Module):
@@ -531,7 +526,7 @@ y=F(x)+x
 
 ---
 
-### 8.19 downsample이 있는 block
+## 8.19 downsample이 있는 block
 
 shape가 변할 때는:
 
@@ -560,9 +555,9 @@ skip branch output shape
 
 ---
 
-## 10. ResNet 전체 구조 읽기
+# 10. ResNet 전체 구조 읽기
 
-### 8.20 큰 흐름
+## 8.20 큰 흐름
 
 ResNet image classifier는 대략 다음 구조를 갖는다.
 
@@ -599,7 +594,7 @@ channel count      ↑
 
 ---
 
-### 8.21 Global Average Pooling
+## 8.21 Global Average Pooling
 
 마지막 convolution feature tensor가:
 
@@ -631,9 +626,9 @@ g_c=\frac{1}{HW}\sum_{i=1}^{H}\sum_{j=1}^{W}x_{c,i,j}
 
 ---
 
-## 11. 지금까지의 개념을 ResNet 안에서 다시 찾기
+# 11. 지금까지의 개념을 ResNet 안에서 다시 찾기
 
-### 8.22 Week 1 — Model / Parameter / Loss
+## 8.22 Week 1 — Model / Parameter / Loss
 
 ResNet 전체가 parameterized function이다.
 
@@ -645,7 +640,7 @@ loss가 training objective를 제공한다.
 
 ---
 
-### 8.23 Week 2 — Linear transformation
+## 8.23 Week 2 — Linear transformation
 
 convolution과 마지막 classifier 모두 weighted sum을 기반으로 한다.
 
@@ -653,31 +648,31 @@ convolution과 마지막 classifier 모두 weighted sum을 기반으로 한다.
 
 ---
 
-### 8.24 Week 3 — Representation
+## 8.24 Week 3 — Representation
 
 Residual stage가 input image를 점점 다른 learned representation으로 바꾼다.
 
 ---
 
-### 8.25 Week 4 — Gradient Descent / Chain Rule
+## 8.25 Week 4 — Gradient Descent / Chain Rule
 
 모든 parameter는 loss gradient를 이용해 update된다.
 
 ---
 
-### 8.26 Week 5 — Activation / Backpropagation
+## 8.26 Week 5 — Activation / Backpropagation
 
 ReLU가 nonlinearity를 제공하고, backpropagation이 deep computational graph의 gradient를 계산한다.
 
 ---
 
-### 8.27 Week 6 — Training / Generalization
+## 8.27 Week 6 — Training / Generalization
 
 Cross-Entropy로 logits를 학습하고 validation/test로 generalization을 평가한다.
 
 ---
 
-### 8.28 Week 7 — Convolution / Inductive Bias
+## 8.28 Week 7 — Convolution / Inductive Bias
 
 Residual function \(F\)의 주요 연산은 convolution이다.
 
@@ -685,7 +680,7 @@ locality와 weight sharing을 그대로 활용한다.
 
 ---
 
-## 12. ResNet을 한 문장으로 설명하기
+# 12. ResNet을 한 문장으로 설명하기
 
 좋은 설명:
 
@@ -704,9 +699,9 @@ locality와 weight sharing을 그대로 활용한다.
 
 ---
 
-## 13. 최종 architecture 해석 훈련
+# 13. 최종 architecture 해석 훈련
 
-### 8.29 다음 block을 보면 무엇을 물어야 하는가?
+## 8.29 다음 block을 보면 무엇을 물어야 하는가?
 
 ```text
 Conv 3×3
@@ -734,7 +729,7 @@ ReLU
 
 ---
 
-## Checkpoint
+# Checkpoint
 
 1. 깊은 network가 더 큰 capacity를 가져도 training이 어려울 수 있는 이유는?
 2. degradation problem은 단순한 overfitting과 어떻게 다른가?
@@ -752,9 +747,9 @@ ReLU
 
 ---
 
-## 선택 과제
+# 선택 과제
 
-### [Check] Residual 식 해석
+## [Check] Residual 식 해석
 
 \[
 y=x+F(x)
@@ -766,7 +761,7 @@ y=x+F(x)
 2. \(F(x)=-x\)이면?
 3. \(F(x)\)가 작다는 것은 어떤 mapping을 의미하는가?
 
-### [Check] Shape 확인
+## [Check] Shape 확인
 
 ```text
 x    : (32, 64, 56, 56)
@@ -775,7 +770,7 @@ F(x) : (32, 128, 28, 28)
 
 를 바로 더할 수 없는 이유를 설명하고 skip branch에 필요한 transformation을 제안한다.
 
-### [Apply] BasicBlock shape tracing
+## [Apply] BasicBlock shape tracing
 
 다음 block을 따라 shape를 적는다.
 
@@ -790,7 +785,7 @@ BN
 
 main path output과 skip path의 projection output shape가 어떻게 같아져야 하는지 적는다.
 
-### [Apply] Gradient 식 해석
+## [Apply] Gradient 식 해석
 
 \[
 \frac{\partial L}{\partial x}
@@ -801,7 +796,7 @@ main path output과 skip path의 projection output shape가 어떻게 같아져�
 
 에서 identity 항이 없을 때와 있을 때 gradient path 관점의 차이를 설명한다.
 
-### [Apply] BatchNorm 계산
+## [Apply] BatchNorm 계산
 
 간단한 scalar batch:
 
@@ -811,7 +806,7 @@ main path output과 skip path의 projection output shape가 어떻게 같아져�
 
 의 mean과 variance를 계산하고, \(\epsilon\)은 무시한 상태에서 normalized value를 구해본다.
 
-### [Explore] Plain CNN vs Residual CNN
+## [Explore] Plain CNN vs Residual CNN
 
 비슷한 깊이의 두 모델을 비교한다.
 
@@ -826,7 +821,7 @@ main path output과 skip path의 projection output shape가 어떻게 같아져�
 
 ---
 
-## 최종 한 장 요약
+# 최종 한 장 요약
 
 ```text
 깊은 CNN
@@ -850,7 +845,7 @@ Conv + BN + ReLU + Backprop + Classifier
 위에 residual structure를 더한 것
 ```
 
-## 과정의 최종 목표
+# 과정의 최종 목표
 
 이제 ResNet diagram을 보며 다음을 자신의 말로 설명할 수 있어야 한다.
 

@@ -6,9 +6,9 @@
 |---|---|
 | 0 | Python 함수·반복문·NumPy shape |
 | 1 | 예측과 MSE·parameter별 loss 곡선 |
-| 2 | gradient update·학습률·수치 미분 |
-| 3 | 내적·선형 분류 경계 |
-| 4 | 원형 데이터와 feature transformation |
+| 2 | 내적·선형 분류 경계 |
+| 3 | 원형 데이터와 feature transformation |
+| 4 | gradient update·학습률·수치 미분 |
 | 5 | PyTorch autograd·ReLU·XOR MLP |
 | 6 | batch·epoch·CrossEntropyLoss·학습/검증 분리 |
 | 7 | 작은 합성 이미지 CNN·filter·feature map·pooling |

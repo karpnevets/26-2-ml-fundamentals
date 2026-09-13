@@ -1,22 +1,17 @@
 ---
-title: Python / Colab Foundations
+title: "Python / Colab Foundations"
 week: 0
-question: 머신러닝 코드를 스스로 읽고 수정하려면 Python에서 무엇을 알아야 할까?
-concepts:
-  - Colab
-  - Python
-  - Function
-  - List
-  - NumPy
-  - Shape
-  - Indexing
-  - Vectorized Operation
-estimated_time: 120–180 min
+question: "머신러닝 코드를 스스로 읽고 수정하려면 Python에서 무엇을 알아야 할까?"
+concepts: ["Colab", "Python", "Function", "List", "NumPy", "Shape", "Indexing", "Vectorized Operation"]
+estimated_time: "120–180 min"
 optional: true
 ---
+
+# Week 0 — Python / Colab Foundations
+
 > 이 주차는 선택 주차다. 이미 Python의 변수, 조건문, 반복문, 함수, 리스트, NumPy 배열과 `shape`를 편하게 읽을 수 있다면 Week 1부터 시작해도 된다.
 
-### 0.1 이번 주의 목표
+## 0.1 이번 주의 목표
 
 이 과정에서 Python 자체를 깊게 배우지는 않는다. 대신 이후 주차의 코드를 **혼자 읽고, 숫자를 바꾸고, 오류 위치를 찾고, 배열의 모양을 확인할 수 있는 수준**을 만든다.
 
@@ -34,7 +29,7 @@ optional: true
 
 ---
 
-### 0.2 Colab은 무엇인가?
+## 0.2 Colab은 무엇인가?
 
 Colab은 브라우저에서 Python 코드를 실행할 수 있는 notebook 환경이다. 한 파일 안에 **설명용 Markdown 셀**과 **실행 가능한 Code 셀**을 함께 둘 수 있다.
 
@@ -52,7 +47,7 @@ print(x + 5)
 
 하지만 첫 셀을 실행하지 않은 채 두 번째 셀만 실행하면 `x`가 정의되지 않았다는 오류가 난다.
 
-#### 꼭 기억할 것
+### 꼭 기억할 것
 
 - 셀 왼쪽의 실행 버튼 또는 `Shift + Enter`로 실행한다.
 - 위에서 아래로 실행했다고 가정하지 말고, **실제로 어떤 셀을 실행했는지**가 중요하다.
@@ -60,7 +55,7 @@ print(x + 5)
 
 ---
 
-### 0.3 변수와 대입
+## 0.3 변수와 대입
 
 ```python
 x = 3
@@ -87,7 +82,7 @@ w = w - learning_rate * gradient
 
 ---
 
-### 0.4 기본 자료형
+## 0.4 기본 자료형
 
 자주 보게 될 자료형은 다음 정도다.
 
@@ -104,7 +99,7 @@ is_train = True    # bool
 print(type(loss))
 ```
 
-#### 숫자 연산
+### 숫자 연산
 
 ```python
 3 + 2
@@ -125,7 +120,7 @@ Week 1에서 바로 사용한다.
 
 ---
 
-### 0.5 비교 연산과 Boolean
+## 0.5 비교 연산과 Boolean
 
 ```python
 x > 0
@@ -144,7 +139,7 @@ x != 3
 
 ---
 
-### 0.6 조건문
+## 0.6 조건문
 
 ```python
 score = 2.4
@@ -168,7 +163,7 @@ Week 2의 linear classifier와 perceptron에서 `if`가 자주 등장한다.
 
 ---
 
-### 0.7 List
+## 0.7 List
 
 여러 값을 묶을 수 있다.
 
@@ -176,7 +171,7 @@ Week 2의 linear classifier와 perceptron에서 `if`가 자주 등장한다.
 scores = [0.2, 1.3, -0.7]
 ```
 
-#### Indexing
+### Indexing
 
 Python은 0부터 센다.
 
@@ -186,7 +181,7 @@ scores[1]   # 1.3
 scores[-1]  # -0.7
 ```
 
-#### Slicing
+### Slicing
 
 ```python
 x = [10, 20, 30, 40, 50]
@@ -200,7 +195,7 @@ x[2:]   # [30, 40, 50]
 
 ---
 
-### 0.8 반복문
+## 0.8 반복문
 
 ```python
 for i in range(5):
@@ -238,7 +233,7 @@ for epoch in range(num_epochs):
 
 ---
 
-### 0.9 함수
+## 0.9 함수
 
 ```python
 def square(x):
@@ -263,7 +258,7 @@ output
 
 이 관점은 Week 1에서 모델을 이해할 때 그대로 사용한다.
 
-#### 인자가 여러 개일 수도 있다
+### 인자가 여러 개일 수도 있다
 
 ```python
 def linear(x, w, b):
@@ -276,7 +271,7 @@ prediction = linear(x=2, w=3, b=1)
 
 ---
 
-### 0.10 Library와 import
+## 0.10 Library와 import
 
 Python은 다른 사람이 만든 기능을 불러와 사용할 수 있다.
 
@@ -303,9 +298,9 @@ import torch.nn as nn
 
 ---
 
-## NumPy 기초
+# NumPy 기초
 
-### 0.11 Python list와 NumPy array는 왜 다른가?
+## 0.11 Python list와 NumPy array는 왜 다른가?
 
 Python list는 범용적인 자료구조다.
 
@@ -347,7 +342,7 @@ NumPy에서는 수학적인 배열 연산을 자연스럽게 표현할 수 있�
 
 ---
 
-### 0.12 Shape: 앞으로 계속 확인해야 할 정보
+## 0.12 Shape: 앞으로 계속 확인해야 할 정보
 
 ```python
 x = np.array([1, 2, 3])
@@ -401,7 +396,7 @@ X\in\mathbb{R}^{N\times d}
 
 ---
 
-### 0.13 ndim과 dtype
+## 0.13 ndim과 dtype
 
 ```python
 print(X.ndim)
@@ -419,7 +414,7 @@ X = X.astype(np.float32)
 
 ---
 
-### 0.14 2차원 배열 Indexing
+## 0.14 2차원 배열 Indexing
 
 ```python
 X = np.array([
@@ -441,7 +436,7 @@ X[:, 1]  # 두 번째 열
 
 ---
 
-### 0.15 Element-wise 연산
+## 0.15 Element-wise 연산
 
 ```python
 x = np.array([1, 2, 3])
@@ -466,7 +461,7 @@ x * y
 
 ---
 
-### 0.16 Dot Product 맛보기
+## 0.16 Dot Product 맛보기
 
 ```python
 x = np.array([1, 2, 3])
@@ -493,7 +488,7 @@ Dot product의 의미는 Week 2에서 제대로 배운다. 여기서는 `*`와 `
 
 ---
 
-### 0.17 Broadcasting은 무엇인가?
+## 0.17 Broadcasting은 무엇인가?
 
 다음 연산은 가능하다.
 
@@ -523,7 +518,7 @@ NumPy가 `b`를 각 행에 반복해서 더해 준다.
 
 ---
 
-### 0.18 함수 적용과 평균
+## 0.18 함수 적용과 평균
 
 ```python
 x = np.array([1.0, 2.0, 3.0])
@@ -537,9 +532,9 @@ Loss를 여러 sample에 대해 평균낼 때 `mean`이 자주 등장한다.
 
 ---
 
-## 그래프 그리기
+# 그래프 그리기
 
-### 0.19 Matplotlib 최소 사용법
+## 0.19 Matplotlib 최소 사용법
 
 ```python
 import matplotlib.pyplot as plt
@@ -564,9 +559,9 @@ plt.show()
 
 ---
 
-## 오류 읽기
+# 오류 읽기
 
-### 0.20 Traceback을 두려워하지 않기
+## 0.20 Traceback을 두려워하지 않기
 
 오류가 나면 긴 메시지가 보일 수 있다.
 
@@ -582,26 +577,26 @@ NameError: name 'prediciton' is not defined
 
 또 자주 만나는 오류:
 
-#### `SyntaxError`
+### `SyntaxError`
 Python 문법 자체가 잘못되었다.
 
-#### `NameError`
+### `NameError`
 변수나 함수 이름이 정의되지 않았다.
 
-#### `TypeError`
+### `TypeError`
 해당 타입에 허용되지 않는 연산을 했다.
 
-#### `IndexError`
+### `IndexError`
 존재하지 않는 위치를 indexing했다.
 
-#### `ValueError`
+### `ValueError`
 값의 형태나 크기가 함수의 기대와 맞지 않는다. 머신러닝에서는 shape 문제로 자주 만난다.
 
 ---
 
-## Python에서 ML 코드 읽는 법
+# Python에서 ML 코드 읽는 법
 
-### 0.21 한 줄씩 "값의 모양"을 추적한다
+## 0.21 한 줄씩 "값의 모양"을 추적한다
 
 예를 들어:
 
@@ -631,7 +626,7 @@ scores  : (3,)
 
 ---
 
-### 0.22 객체의 점(`.`)은 무엇인가?
+## 0.22 객체의 점(`.`)은 무엇인가?
 
 다음 코드:
 
@@ -650,7 +645,7 @@ optimizer.step()
 
 ---
 
-## Checkpoint
+# Checkpoint
 
 1. `=`와 `==`는 어떻게 다른가?
 2. `x = x + 1`이 가능한 이유를 설명해보자.
@@ -663,9 +658,9 @@ optimizer.step()
 
 ---
 
-## 선택 과제
+# 선택 과제
 
-### [Check] 코드 결과 예측
+## [Check] 코드 결과 예측
 
 ```python
 x = 2
@@ -678,7 +673,7 @@ print(x)
 
 실행하지 않고 먼저 결과를 예상한다.
 
-### [Check] Shape 읽기
+## [Check] Shape 읽기
 
 다음 배열의 shape를 직접 적는다.
 
@@ -693,7 +688,7 @@ X = np.array([
 
 그리고 "sample 수"와 "feature 수"로 해석한다.
 
-### [Apply] Linear function 작성
+## [Apply] Linear function 작성
 
 다음 함수를 직접 작성한다.
 
@@ -703,7 +698,7 @@ def linear(x, w, b):
     ...
 ```
 
-### [Apply] NumPy score 계산
+## [Apply] NumPy score 계산
 
 3개의 sample, 2개의 feature를 가진 `X`와 weight `w`를 만들고:
 
@@ -713,13 +708,13 @@ scores = X @ w + b
 
 의 결과 shape를 확인한다.
 
-### [Explore] Broadcasting 확인
+## [Explore] Broadcasting 확인
 
 `X.shape == (4, 3)`이고 `b.shape == (3,)`일 때 `X + b`가 왜 가능한지 각 행에 어떤 계산이 일어나는지 적어본다.
 
 ---
 
-## 이번 주 한 장 요약
+# 이번 주 한 장 요약
 
 ```text
 Python 코드를 읽을 때
@@ -737,7 +732,7 @@ ML 코드에서는 특히
 를 계속 확인한다.
 ```
 
-## 다음 주 Preview
+# 다음 주 Preview
 
 이제 간단한 Python 코드를 읽을 수 있다.
 

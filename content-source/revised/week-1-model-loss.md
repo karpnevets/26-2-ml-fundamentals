@@ -1,18 +1,14 @@
 ---
-title: 'Model, Parameter, Prediction, Loss'
+title: "Model, Parameter, Prediction, Loss"
 week: 1
-question: 모델이 학습한다는 것은 정확히 무엇이 바뀐다는 뜻일까?
-concepts:
-  - Model
-  - Parameter
-  - Feature
-  - Prediction
-  - Target
-  - Loss
-  - Dataset Loss
-estimated_time: 120–150 min
+question: "모델이 학습한다는 것은 정확히 무엇이 바뀐다는 뜻일까?"
+concepts: ["Model", "Parameter", "Feature", "Prediction", "Target", "Loss", "Dataset Loss"]
+estimated_time: "120–150 min"
 ---
-### 1.1 이번 주의 목표
+
+# Week 1 — Model, Parameter, Prediction, Loss
+
+## 1.1 이번 주의 목표
 
 이번 주에는 아직 Gradient Descent를 배우지 않는다. 먼저 학습의 대상을 정확히 잡는다.
 
@@ -24,7 +20,7 @@ estimated_time: 120–150 min
 
 ---
 
-### 1.2 모델을 가장 작은 형태로 시작하기
+## 1.2 모델을 가장 작은 형태로 시작하기
 
 다음 함수를 생각하자.
 
@@ -56,7 +52,7 @@ estimated_time: 120–150 min
 
 ---
 
-### 1.3 Parameter는 무엇인가?
+## 1.3 Parameter는 무엇인가?
 
 같은 input \(x=2\)를 넣어도 parameter가 다르면 prediction이 달라진다.
 
@@ -79,7 +75,7 @@ estimated_time: 120–150 min
 
 ---
 
-### 1.4 Feature와 sample
+## 1.4 Feature와 sample
 
 실제 input에는 정보가 하나만 있지 않다.
 
@@ -100,7 +96,7 @@ estimated_time: 120–150 min
 
 ---
 
-### 1.5 Prediction과 Target
+## 1.5 Prediction과 Target
 
 모델이 만든 값은 prediction이다.
 
@@ -137,7 +133,7 @@ Target y ─────────┐
 
 ---
 
-### 1.6 "더 좋은 모델"을 어떻게 숫자로 표현할까?
+## 1.6 "더 좋은 모델"을 어떻게 숫자로 표현할까?
 
 두 모델이 있다고 하자.
 
@@ -155,7 +151,7 @@ Target             = 5.0
 
 ---
 
-### 1.7 Squared Error Loss
+## 1.7 Squared Error Loss
 
 회귀 문제에서 가장 단순한 예로 squared error를 사용할 수 있다.
 
@@ -165,7 +161,7 @@ Target             = 5.0
 
 이 식은 반드시 항상 보이도록 둔다. 이번 과정에서 loss의 역할을 이해하기 위한 핵심 수식이다.
 
-#### 왜 제곱할까?
+### 왜 제곱할까?
 
 prediction이 target보다 크든 작든 오차의 크기를 양수로 만들 수 있다.
 
@@ -212,7 +208,7 @@ squared error는 큰 오차에 훨씬 큰 값을 준다. 어떤 loss를 선택�
 
 ---
 
-### 1.8 Parameter가 바뀌면 Loss가 바뀐다
+## 1.8 Parameter가 바뀌면 Loss가 바뀐다
 
 아주 단순하게:
 
@@ -249,7 +245,7 @@ L(w)=(wx-y)^2=(2w-6)^2
 
 ---
 
-### 1.9 Loss를 Parameter의 함수로 보기
+## 1.9 Loss를 Parameter의 함수로 보기
 
 위 예시에서는:
 
@@ -288,7 +284,7 @@ w^*=\arg\min_w L(w)
 
 ---
 
-### 1.10 실제 데이터는 sample 하나가 아니다
+## 1.10 실제 데이터는 sample 하나가 아니다
 
 지금까지는 sample 하나만 생각했다.
 
@@ -323,15 +319,15 @@ J(\theta)=\frac{1}{N}\sum_{i=1}^{N}\ell(f_\theta(x_i),y_i)
 
 ---
 
-### 1.11 Loss와 Metric은 같은가?
+## 1.11 Loss와 Metric은 같은가?
 
 둘은 역할이 다를 수 있다.
 
-#### Loss
+### Loss
 
 parameter를 학습하는 기준으로 사용한다.
 
-#### Metric
+### Metric
 
 사람이 모델 성능을 해석하기 위해 보는 평가 지표다.
 
@@ -348,7 +344,7 @@ metric   : Accuracy
 
 ---
 
-### 1.12 Loss를 작게 만들면 무조건 좋은 모델인가?
+## 1.12 Loss를 작게 만들면 무조건 좋은 모델인가?
 
 아직은 다음과 같이 생각하자.
 
@@ -368,7 +364,7 @@ Week 6에서 **generalization과 overfitting**을 배우며 이 질문을 다시
 
 ---
 
-### 1.13 코드로 연결하기
+## 1.13 코드로 연결하기
 
 ```python
 x = 2.0
@@ -414,7 +410,7 @@ for w in [0, 1, 2, 3, 4, 5]:
 
 ---
 
-### 1.14 이번 주에서 일부러 답하지 않는 질문
+## 1.14 이번 주에서 일부러 답하지 않는 질문
 
 지금은 다음을 모른다.
 
@@ -426,7 +422,7 @@ for w in [0, 1, 2, 3, 4, 5]:
 
 ---
 
-## Checkpoint
+# Checkpoint
 
 1. 모델을 "parameter를 가진 함수"라고 말하는 이유를 설명해보자.
 2. parameter와 input은 어떻게 다른가?
@@ -438,9 +434,9 @@ for w in [0, 1, 2, 3, 4, 5]:
 
 ---
 
-## 선택 과제
+# 선택 과제
 
-### [Check] Parameter와 Data 구분
+## [Check] Parameter와 Data 구분
 
 다음 식에서 각 기호의 역할을 적는다.
 
@@ -452,7 +448,7 @@ for w in [0, 1, 2, 3, 4, 5]:
 - parameter:
 - prediction:
 
-### [Check] Loss 계산
+## [Check] Loss 계산
 
 \[
 y=4
@@ -466,7 +462,7 @@ y=4
 ŷ = 1
 ```
 
-### [Apply] Dataset 평균 loss
+## [Apply] Dataset 평균 loss
 
 세 sample의 squared error가 각각:
 
@@ -478,7 +474,7 @@ y=4
 
 그 다음 왜 "합" 대신 "평균"을 사용하면 dataset 크기가 달라도 값의 규모를 비교하기 쉬운지 설명한다.
 
-### [Apply] Loss curve 그리기
+## [Apply] Loss curve 그리기
 
 \[
 L(w)=(2w-6)^2
@@ -492,7 +488,7 @@ L(w)=(2w-6)^2
 - \(w=0\)일 때 loss
 - \(w=5\)일 때 loss
 
-### [Explore] 다른 loss 설계
+## [Explore] 다른 loss 설계
 
 prediction과 target 차이를 평가하는 함수를 직접 하나 제안한다.
 
@@ -506,7 +502,7 @@ prediction이 target과 정확히 같을 때
 
 ---
 
-## 이번 주 한 장 요약
+# 이번 주 한 장 요약
 
 ```text
 Data
@@ -527,7 +523,7 @@ Loss도 바뀐다.
 "어떤 θ가 작은 loss를 만드는가?"
 ```
 
-## 다음 주 Preview
+# 다음 주 Preview
 
 지금까지는 input을 거의 숫자 하나처럼 다뤘다.
 

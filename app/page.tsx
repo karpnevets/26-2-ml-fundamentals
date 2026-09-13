@@ -53,13 +53,13 @@ export default async function Home() {
           <span className="week-number">00</span>
           <div>
             <span className="badge">선택 · 준비 운동</span>
-            <h3>Python / Colab Survival Kit</h3>
+            <h3>{all[0].title}</h3>
             <p>
               코드를 읽는 데 필요한 만큼만. Python이 처음이라면 여기서
               출발하세요.
             </p>
           </div>
-          <span>30–60 min ↗</span>
+          <span>{all[0].estimated_time} ↗</span>
         </Link>
         <div className="roadmap">
           {all.slice(1).map((w, i) =>
@@ -102,7 +102,7 @@ export default async function Home() {
           <summary>수학이나 선형대수를 몰라도 괜찮나요?</summary>
           <p>
             네. 필요한 수학은 문제가 생기는 순간에 소개합니다. 1주차에는 숫자
-            하나로 시작하고, 여러 feature가 필요해지는 3주차에 vector를
+            하나로 시작하고, 여러 feature가 필요해지는 2주차에 vector를
             만납니다.
           </p>
         </details>

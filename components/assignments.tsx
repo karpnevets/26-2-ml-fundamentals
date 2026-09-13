@@ -9,39 +9,48 @@ export function Assignments({
   week: number;
   collapsible?: boolean;
 }) {
+  const parts = body.split(/(?=^### \[(?:Check|Apply|Explore)\])/m);
+  const intro = parts
+    .filter((part) => !/^### \[(Check|Apply|Explore)\]/.test(part))
+    .join("\n");
   return (
     <>
-      {body.split(/(?=^### \[(?:Check|Apply|Explore)\])/m).map((part, i) => {
-        const m = part.match(/^### \[(Check|Apply|Explore)\](.*)\n/);
-        if (!m) return <LessonMarkdown key={i} text={part} />;
-        const level = m[1];
-        const time =
-          level === "Check" ? "5–15" : level === "Apply" ? "20–40" : "30–90+";
+      <LessonMarkdown text={intro} />
+      {(["Check", "Apply", "Explore"] as const).map((level) => {
+        const tasks = parts.filter((part) => part.startsWith(`### [${level}]`));
+        if (!tasks.length) return null;
         const contents = (
           <>
-            <LessonMarkdown text={part.slice(m[0].length)} />
+            {tasks.map((part, i) => (
+              <LessonMarkdown
+                key={i}
+                text={part.replace(`### [${level}]`, "###")}
+              />
+            ))}
             <ProgressCheck
               id={`w${week}:assignment:${level}`}
-              label="이 과제를 완료했어요"
+              label="이 단계의 과제를 모두 완료했어요"
             />
           </>
         );
         return collapsible ? (
           <details
             className={`assignment level-${level.toLowerCase()}`}
-            key={i}
+            key={level}
           >
             <summary>
-              {level.toUpperCase()} · {time} min {m[2]}
+              {level.toUpperCase()} · {tasks.length}개 문항
             </summary>
             {contents}
           </details>
         ) : (
-          <div className={`assignment level-${level.toLowerCase()}`} key={i}>
+          <div
+            className={`assignment level-${level.toLowerCase()}`}
+            key={level}
+          >
             <span className="badge">
-              {level.toUpperCase()} · {time} min
+              {level.toUpperCase()} · {tasks.length}개 문항
             </span>
-            {m[2].trim() && <h3>{m[2]}</h3>}
             {contents}
           </div>
         );

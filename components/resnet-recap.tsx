@@ -23,7 +23,7 @@ const blocks = [
   ],
   [
     "Classifier",
-    "3",
+    "2",
     "Global average pooling으로 모은 feature에서 class별 logit을 계산합니다.",
   ],
   [
@@ -33,7 +33,7 @@ const blocks = [
   ],
   [
     "Backpropagation ←",
-    "2, 5",
+    "4, 5",
     "Loss에서 chain rule로 각 parameter의 gradient를 계산합니다. Skip 경로에서도 gradient가 전달됩니다.",
   ],
 ];

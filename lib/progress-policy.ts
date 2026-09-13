@@ -1,4 +1,24 @@
+import revisedConcepts from "./revised-concepts.json";
+const revisedIds = new Set(revisedConcepts);
 export type ProgressValues = Record<string, boolean>;
+export function revisedLocalProgress(raw: unknown): ProgressValues {
+  return Object.fromEntries(
+    Object.entries(localProgress(raw))
+      .filter(([id]) => !id.includes(":assignment:"))
+      .map(
+        ([id, value]) =>
+          [
+            id.replace(
+              /^w([234]):/,
+              (_, week) =>
+                `w${({ "2": 4, "3": 2, "4": 3 } as Record<string, number>)[week]}:`,
+            ),
+            value,
+          ] as const,
+      )
+      .filter(([id]) => revisedIds.has(id)),
+  );
+}
 export function validProgressChange(
   body: unknown,
   allowed: Set<string>,

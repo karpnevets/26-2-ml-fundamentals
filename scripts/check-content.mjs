@@ -2,38 +2,35 @@ import fs from "node:fs";
 import assert from "node:assert/strict";
 import matter from "gray-matter";
 import katex from "katex";
-const source = fs
-  .readFileSync("ml_fundamentals_sig_website_content.md", "utf8")
-  .replace(/\r\n/g, "\n");
+import { normalizeLesson } from "./import-revised-content.mjs";
 let equations = 0,
-  assignments = 0;
-const starts = [...source.matchAll(/^# Week (\d) — (.+)$/gm)];
+  assignments = 0,
+  disclosures = 0;
+const files = fs.readdirSync("content").filter((f) => /^week-\d/.test(f));
+assert.equal(files.length, 9);
 for (let week = 0; week < 9; week++) {
-  const file = fs
-    .readdirSync("content")
-    .find((f) => f.startsWith(`week-${week}-`));
+  const file = files.find((f) => f.startsWith(`week-${week}-`));
   assert(file);
-  const { data, content } = matter(fs.readFileSync(`content/${file}`, "utf8"));
-  assert.equal(data.week, week);
-  assert(data.question);
-  assert(data.concepts.length);
-  let original = source.slice(
-    starts[week].index,
-    starts[week + 1]?.index ?? source.indexOf("# 사이트용 추가 페이지 제안"),
+  const raw = fs.readFileSync(`content/${file}`, "utf8");
+  assert.equal(
+    raw.replace(/\r\n/g, "\n"),
+    normalizeLesson(fs.readFileSync(`content-source/revised/${file}`, "utf8")),
   );
-  original = original
-    .slice(original.indexOf("\n"))
-    .replace(/^> 선택 주차.*\n/m, "")
-    .replace(/^> 핵심 질문:.*\n/m, "")
-    .trim()
-    .replace(/^# (.+)$/gm, "## $1");
-  assert.equal(content.trim(), original, "Content altered: " + file);
+  const { data, content } = matter(raw);
+  assert.equal(data.week, week);
+  assert(data.question && data.concepts.length);
   assert(content.includes("## Checkpoint"));
   for (const level of ["Check", "Apply", "Explore"]) {
-    assert(content.includes(`### [${level}]`));
-    assignments++;
+    const tasks = [
+      ...content.matchAll(new RegExp(`^### \\[${level}\\]`, "gm")),
+    ];
+    assert(tasks.length > 0);
+    assignments += tasks.length;
   }
   const noCode = content.replace(/```[\s\S]*?```/g, "");
+  const opens = (noCode.match(/<details>/g) || []).length;
+  assert.equal(opens, (noCode.match(/<\/details>/g) || []).length);
+  disclosures += opens;
   for (const m of noCode.matchAll(/\\\[([\s\S]*?)\\\]|\\\((.*?)\\\)/g)) {
     katex.renderToString(m[1] ?? m[2], {
       throwOnError: true,
@@ -42,6 +39,17 @@ for (let week = 0; week < 9; week++) {
     equations++;
   }
 }
+for (const file of [
+  "glossary.json",
+  "lesson-context.json",
+  "index.md",
+  "site-guide.md",
+  "final-project.md",
+])
+  assert.equal(
+    fs.readFileSync(`content/${file}`, "utf8"),
+    fs.readFileSync(`content-source/revised/${file}`, "utf8"),
+  );
 console.log(
-  `PASS: 9 complete source lessons, ${assignments} assignments, ${equations} valid equations.`,
+  `PASS: 9 revised lessons, ${assignments} tasks, ${equations} valid formulas, ${disclosures} explicit disclosures; original prose preserved.`,
 );

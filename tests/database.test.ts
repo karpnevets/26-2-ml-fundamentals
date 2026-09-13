@@ -67,7 +67,7 @@ test("PostgreSQL migration, isolation, upsert, safe import and admin counts", as
     const learners = summarizeLearners(await dashboardRows(query), items);
     const first = learners.find((u) => u.id === A)!;
     assert.equal(first.completedWeeks, 1);
-    assert.equal(first.completedConcepts, 6);
+    assert.equal(first.completedConcepts, 7);
     assert.equal(first.assignments.Explore, 1);
     assert.equal(learners.find((u) => u.id === B)!.percent, 0);
     assert(learnersCsv(learners).includes("'=HYPERLINK"));

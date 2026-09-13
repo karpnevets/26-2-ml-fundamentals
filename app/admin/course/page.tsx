@@ -17,8 +17,12 @@ export default async function Page() {
         <h1>관리자만 접근할 수 있습니다.</h1>
       </div>
     );
-  const quizzes = await query("SELECT week,published FROM week_quizzes");
-  const edits = await query("SELECT week,updated_at FROM lesson_edits");
+  const quizzes = await query(
+    "SELECT week,published FROM week_quizzes WHERE to_jsonb(week_quizzes)->>'content_revision'='revised-v2'",
+  );
+  const edits = await query(
+    "SELECT week,updated_at FROM lesson_edits WHERE to_jsonb(lesson_edits)->>'content_revision'='revised-v2'",
+  );
   return (
     <div className="page narrow">
       <Link href="/admin">← 학습 현황</Link>

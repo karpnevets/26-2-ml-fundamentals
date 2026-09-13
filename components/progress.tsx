@@ -9,7 +9,11 @@ import {
 } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { localProgress, type ProgressValues } from "@/lib/progress-policy";
+import {
+  localProgress,
+  revisedLocalProgress,
+  type ProgressValues,
+} from "@/lib/progress-policy";
 import { nextLearning } from "@/lib/continue-learning";
 type User = { id: string; email: string; name: string; isAdmin: boolean };
 type Mode = "loading" | "local" | "guest" | "account" | "unavailable" | "error";
@@ -37,7 +41,7 @@ const Context = createContext<State>({
   importLocal: () => {},
   localCount: 0,
 });
-const LOCAL_KEY = "ml-sig-progress-v1";
+const LOCAL_KEY = "ml-sig-progress-v2";
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const [values, setValues] = useState<ProgressValues>({}),
     [mode, setMode] = useState<Mode>("loading"),
@@ -50,6 +54,15 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     generation = useRef(0);
   function readLocal() {
     try {
+      if (localStorage.getItem(LOCAL_KEY) === null) {
+        const old = JSON.parse(
+          localStorage.getItem("ml-sig-progress-v1") || "{}",
+        );
+        localStorage.setItem(
+          LOCAL_KEY,
+          JSON.stringify(revisedLocalProgress(old)),
+        );
+      }
       return localProgress(JSON.parse(localStorage.getItem(LOCAL_KEY) || "{}"));
     } catch {
       setStorageNotice(true);

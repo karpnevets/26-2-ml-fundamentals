@@ -1,20 +1,14 @@
 ---
-title: Classification Training & Generalization
+title: "Classification Training & Generalization"
 week: 6
-question: Neural Network를 실제 classification 문제에 어떻게 학습시키고 평가할까?
-concepts:
-  - Logit
-  - Softmax
-  - Cross-Entropy
-  - Mini-batch
-  - Epoch
-  - Optimizer
-  - Train/Validation/Test
-  - Generalization
-  - Overfitting
-estimated_time: 150–180 min
+question: "Neural Network를 실제 classification 문제에 어떻게 학습시키고 평가할까?"
+concepts: ["Logit", "Softmax", "Cross-Entropy", "Mini-batch", "Epoch", "Optimizer", "Train/Validation/Test", "Generalization", "Overfitting"]
+estimated_time: "150–180 min"
 ---
-### 6.1 이번 주의 목표
+
+# Week 6 — Classification Training & Generalization
+
+## 6.1 이번 주의 목표
 
 Week 5까지는 neural network가 어떻게 prediction을 만들고, backpropagation으로 gradient를 계산하는지 배웠다.
 
@@ -33,9 +27,9 @@ Week 5까지는 neural network가 어떻게 prediction을 만들고, backpropaga
 
 ---
 
-## 1. 여러 class 중 하나를 고르기
+# 1. 여러 class 중 하나를 고르기
 
-### 6.2 Multi-class classification
+## 6.2 Multi-class classification
 
 예를 들어 이미지를 다음 세 class 중 하나로 분류한다고 하자.
 
@@ -83,7 +77,7 @@ logit은 아직 probability가 아니다.
 
 ---
 
-### 6.3 왜 probability 형태가 유용한가?
+## 6.3 왜 probability 형태가 유용한가?
 
 다음 두 output을 비교해보자.
 
@@ -100,14 +94,14 @@ B = [10, 0, -5]
 
 ---
 
-## 2. Softmax
+# 2. Softmax
 
-### 6.4 Softmax 정의
+## 6.4 Softmax 정의
 
 class \(i\)의 softmax probability는:
 
 \[
-p_i=\frac{e^{z_i}}{\sum_{j=1}^{K}e^{z_j}}
+p_i=rac{e^{z_i}}{\sum_{j=1}^{K}e^{z_j}}
 \]
 
 이다.
@@ -132,7 +126,7 @@ softmax의 중요한 성질은:
 
 ---
 
-### 6.5 왜 exponential을 사용할까?
+## 6.5 왜 exponential을 사용할까?
 
 \(e^{z_i}\)는 항상 양수다.
 
@@ -181,7 +175,7 @@ p\approx[0.665,0.245,0.090]
 
 ---
 
-### 6.6 Softmax는 logit의 순서를 바꾸지 않는다
+## 6.6 Softmax는 logit의 순서를 바꾸지 않는다
 
 exponential은 단조 증가 함수이므로:
 
@@ -197,9 +191,9 @@ prediction class를 얻기 위해 softmax를 반드시 계산해야 하는 것�
 
 ---
 
-## 3. Cross-Entropy
+# 3. Cross-Entropy
 
-### 6.7 정답 class probability를 높이고 싶다
+## 6.7 정답 class probability를 높이고 싶다
 
 정답 class가 \(y\)라고 하자.
 
@@ -217,7 +211,7 @@ L=-\log p_y
 
 ---
 
-### 6.8 Cross-Entropy 값 읽기
+## 6.8 Cross-Entropy 값 읽기
 
 정답 probability가 높으면:
 
@@ -267,7 +261,7 @@ p_y\to0
 
 ---
 
-### 6.9 One-hot 표현과 일반식
+## 6.9 One-hot 표현과 일반식
 
 정답을 one-hot vector \(y\)로 쓰면:
 
@@ -295,7 +289,7 @@ L=-\log p_y
 
 ---
 
-### 6.10 Softmax + Cross-Entropy의 gradient
+## 6.10 Softmax + Cross-Entropy의 gradient
 
 이 조합은 미분 결과가 깔끔하다.
 
@@ -331,9 +325,9 @@ softmax와 log를 직접 미분하면 얻을 수 있다. 전체 유도는 행렬
 
 ---
 
-## 4. PyTorch에서는 softmax를 직접 넣지 않는 경우
+# 4. PyTorch에서는 softmax를 직접 넣지 않는 경우
 
-### 6.11 `CrossEntropyLoss`는 logits를 받는다
+## 6.11 `CrossEntropyLoss`는 logits를 받는다
 
 PyTorch의:
 
@@ -362,9 +356,9 @@ prediction을 사람이 확인하고 싶을 때는 softmax를 별도로 계산�
 
 ---
 
-## 5. Dataset, Batch, Epoch
+# 5. Dataset, Batch, Epoch
 
-### 6.12 Dataset 전체를 한 번에 쓰기 어려운 이유
+## 6.12 Dataset 전체를 한 번에 쓰기 어려운 이유
 
 데이터가 수백만 개라면 전체를 한 번에 GPU memory에 올리기 어렵다.
 
@@ -374,7 +368,7 @@ prediction을 사람이 확인하고 싶을 때는 softmax를 별도로 계산�
 
 ---
 
-### 6.13 Mini-batch
+## 6.13 Mini-batch
 
 한 번의 forward/backward에서 함께 처리하는 sample 묶음을 mini-batch라고 한다.
 
@@ -404,7 +398,7 @@ y batch: (100,)
 
 ---
 
-### 6.14 Batch loss
+## 6.14 Batch loss
 
 batch size가 \(B\)라면 보통 batch의 평균 loss를 사용한다.
 
@@ -424,13 +418,13 @@ L_{batch}=\frac1B\sum_{i=1}^{B}\ell_i
 
 ---
 
-### 6.15 Epoch와 iteration
+## 6.15 Epoch와 iteration
 
-#### Iteration / Step
+### Iteration / Step
 
 mini-batch 하나로 한 번 parameter update를 수행하는 단위다.
 
-#### Epoch
+### Epoch
 
 training dataset 전체를 한 번 사용한 상태다.
 
@@ -445,9 +439,9 @@ batch size = 100
 
 ---
 
-## 6. 실제 training loop
+# 6. 실제 training loop
 
-### 6.16 전체 순서
+## 6.16 전체 순서
 
 PyTorch의 대표적인 training loop는 다음과 같다.
 
@@ -466,7 +460,7 @@ for x, y in dataloader:
 
 ---
 
-### 6.17 `optimizer.zero_grad()`
+## 6.17 `optimizer.zero_grad()`
 
 PyTorch는 기본적으로 gradient를 parameter의 `.grad`에 **누적**한다.
 
@@ -482,7 +476,7 @@ optimizer.zero_grad()
 
 ---
 
-### 6.18 `logits = model(x)`
+## 6.18 `logits = model(x)`
 
 forward pass다.
 
@@ -498,7 +492,7 @@ Week 5의 모델 계산이 그대로 들어간다.
 
 ---
 
-### 6.19 `loss = criterion(logits, y)`
+## 6.19 `loss = criterion(logits, y)`
 
 prediction과 target을 비교해 scalar loss를 만든다.
 
@@ -506,7 +500,7 @@ multi-class classification에서는 보통 cross-entropy를 사용한다.
 
 ---
 
-### 6.20 `loss.backward()`
+## 6.20 `loss.backward()`
 
 Backpropagation을 실행해 각 parameter의 gradient를 계산한다.
 
@@ -522,7 +516,7 @@ parameters
 
 ---
 
-### 6.21 `optimizer.step()`
+## 6.21 `optimizer.step()`
 
 계산된 gradient를 이용해 parameter를 update한다.
 
@@ -538,7 +532,7 @@ PyTorch optimizer는 이 update 로직을 담당한다.
 
 ---
 
-### 6.22 한 training step을 문장으로 설명하기
+## 6.22 한 training step을 문장으로 설명하기
 
 다음 다섯 문장을 자연스럽게 말할 수 있어야 한다.
 
@@ -550,9 +544,9 @@ PyTorch optimizer는 이 update 로직을 담당한다.
 
 ---
 
-## 7. SGD라는 이름
+# 7. SGD라는 이름
 
-### 6.23 Full-batch Gradient Descent
+## 6.23 Full-batch Gradient Descent
 
 전체 dataset을 사용해 gradient를 계산한다.
 
@@ -562,7 +556,7 @@ PyTorch optimizer는 이 update 로직을 담당한다.
 \frac1N\sum_{i=1}^{N}\nabla\ell_i
 \]
 
-### 6.24 Stochastic / Mini-batch Gradient Descent
+## 6.24 Stochastic / Mini-batch Gradient Descent
 
 작은 batch를 사용해 전체 gradient를 근사한다.
 
@@ -578,9 +572,9 @@ batch마다 sample 구성이 달라지므로 gradient에 noise가 생긴다.
 
 ---
 
-## 8. Training loss만 보면 안 되는 이유
+# 8. Training loss만 보면 안 되는 이유
 
-### 6.25 우리는 무엇을 원하는가?
+## 6.25 우리는 무엇을 원하는가?
 
 진짜 목표는:
 
@@ -596,19 +590,19 @@ batch마다 sample 구성이 달라지므로 gradient에 noise가 생긴다.
 
 ---
 
-### 6.26 Train / Validation / Test
+## 6.26 Train / Validation / Test
 
 데이터를 역할에 따라 나눈다.
 
-#### Training set
+### Training set
 
 parameter를 update하는 데 사용한다.
 
-#### Validation set
+### Validation set
 
 model architecture, learning rate, epoch 수 같은 선택을 평가하는 데 사용한다.
 
-#### Test set
+### Test set
 
 최종 선택이 끝난 뒤 generalization 성능을 평가한다.
 
@@ -620,9 +614,9 @@ model architecture, learning rate, epoch 수 같은 선택을 평가하는 데 �
 
 ---
 
-### 6.27 Parameter와 Hyperparameter
+## 6.27 Parameter와 Hyperparameter
 
-#### Parameter
+### Parameter
 
 training 과정에서 gradient로 학습된다.
 
@@ -632,7 +626,7 @@ training 과정에서 gradient로 학습된다.
 - bias
 - convolution kernel weight
 
-#### Hyperparameter
+### Hyperparameter
 
 학습 절차나 모델 구조를 사람이 정한다.
 
@@ -648,9 +642,9 @@ validation set은 이런 선택을 비교하는 데 사용한다.
 
 ---
 
-## 9. Overfitting
+# 9. Overfitting
 
-### 6.28 전형적인 pattern
+## 6.28 전형적인 pattern
 
 training이 진행되면서:
 
@@ -667,7 +661,7 @@ Validation Loss  ↓ ↓ ↘ ↑ ↑
 
 ---
 
-### 6.29 Underfitting
+## 6.29 Underfitting
 
 반대로 training data조차 충분히 잘 맞히지 못하면 underfitting이라고 한다.
 
@@ -682,9 +676,9 @@ Validation Loss  ↓ ↓ ↘ ↑ ↑
 
 ---
 
-### 6.30 Training / Validation curve 해석
+## 6.30 Training / Validation curve 해석
 
-#### 둘 다 나쁨
+### 둘 다 나쁨
 
 ```text
 Train: poor
@@ -693,7 +687,7 @@ Val:   poor
 
 underfitting 또는 optimization 문제 가능성.
 
-#### Train은 좋고 Val은 나쁨
+### Train은 좋고 Val은 나쁨
 
 ```text
 Train: very good
@@ -702,15 +696,15 @@ Val:   poor
 
 overfitting 가능성.
 
-#### 둘 다 좋음
+### 둘 다 좋음
 
 현재 split에서는 좋은 generalization을 보이고 있을 가능성이 높다.
 
 ---
 
-## 10. Accuracy와 Loss
+# 10. Accuracy와 Loss
 
-### 6.31 같은 accuracy라도 loss는 다를 수 있다
+## 6.31 같은 accuracy라도 loss는 다를 수 있다
 
 두 모델이 모두 정답 class를 맞혔다고 하자.
 
@@ -729,7 +723,7 @@ Model B: 정답 probability 0.99
 
 ---
 
-### 6.32 왜 학습은 accuracy가 아니라 differentiable loss를 사용하는가?
+## 6.32 왜 학습은 accuracy가 아니라 differentiable loss를 사용하는가?
 
 accuracy는 prediction class가 바뀌기 전까지 값이 그대로일 수 있다.
 
@@ -747,9 +741,9 @@ cross-entropy는 logit 변화에 따라 연속적으로 변하고 gradient를 �
 
 ---
 
-## 11. Evaluation mode의 기본
+# 11. Evaluation mode의 기본
 
-### 6.33 `model.train()`과 `model.eval()`
+## 6.33 `model.train()`과 `model.eval()`
 
 PyTorch에는 training과 evaluation에서 동작이 달라지는 layer가 있다.
 
@@ -782,9 +776,9 @@ with torch.no_grad():
 
 ---
 
-## 12. Training 전체 흐름
+# 12. Training 전체 흐름
 
-### 6.34 하나의 epoch 구조
+## 6.34 하나의 epoch 구조
 
 ```python
 for epoch in range(num_epochs):
@@ -818,7 +812,7 @@ Validation phase
 
 ---
 
-## Checkpoint
+# Checkpoint
 
 1. logit과 probability는 어떻게 다른가?
 2. softmax가 출력 합을 1로 만드는 방법을 설명할 수 있는가?
@@ -834,9 +828,9 @@ Validation phase
 
 ---
 
-## 선택 과제
+# 선택 과제
 
-### [Check] Softmax 해석
+## [Check] Softmax 해석
 
 다음 logit에서 prediction class를 먼저 softmax 없이 구한다.
 
@@ -846,7 +840,7 @@ Validation phase
 
 그 다음 왜 softmax를 적용해도 argmax class가 바뀌지 않는지 설명한다.
 
-### [Check] Cross-Entropy 비교
+## [Check] Cross-Entropy 비교
 
 정답 class probability가 다음일 때 loss 크기 순서를 적는다.
 
@@ -857,7 +851,7 @@ Validation phase
 0.01
 ```
 
-### [Apply] Training loop 설명
+## [Apply] Training loop 설명
 
 다음 네 줄 각각이 어느 주차의 어떤 개념과 연결되는지 적는다.
 
@@ -868,13 +862,13 @@ loss.backward()
 optimizer.step()
 ```
 
-### [Apply] Batch 계산
+## [Apply] Batch 계산
 
 training sample이 10,000개이고 batch size가 128이다.
 
 한 epoch에 필요한 iteration 수를 계산한다. 마지막 batch 크기도 생각해본다.
 
-### [Apply] Curve 진단
+## [Apply] Curve 진단
 
 다음 상황을 각각 underfitting/overfitting/잘 학습된 가능성 중 어디에 가깝다고 볼지 설명한다.
 
@@ -886,7 +880,7 @@ C. train acc 91%, val acc 89%
 
 단, 이 숫자만으로 절대적인 결론을 내릴 수 없는 이유도 적는다.
 
-### [Explore] Confidence와 loss
+## [Explore] Confidence와 loss
 
 같은 accuracy를 가진 두 모델을 임의로 만들고 각 sample의 class probability를 다르게 설정한다.
 
@@ -894,7 +888,7 @@ cross-entropy 평균을 비교하여 accuracy가 같아도 loss가 달라질 수
 
 ---
 
-## 이번 주 한 장 요약
+# 이번 주 한 장 요약
 
 ```text
 Input batch
@@ -922,7 +916,7 @@ training loss 최소화만이 아니라
 새로운 data에 대한 generalization
 ```
 
-## 다음 주 Preview
+# 다음 주 Preview
 
 MLP는 어떤 숫자 vector든 처리할 수 있다.
 

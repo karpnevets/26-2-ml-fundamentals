@@ -27,10 +27,10 @@ npm을 사용하는 환경에서는 `npm install`과 `npm run dev`도 가능합�
 ## 페이지
 
 - `/`: SIG 소개, 연결된 8주 로드맵, 개념 기반 진행도, FAQ
-- `/week/0`–`/week/8`: 원문 전체 강의, 목차, 이전/다음 주 이동, 용어 설명, 수식 펼치기, 코드 복사, 체크포인트, 선택 과제
-- `/glossary`: 41개 용어 검색과 관련 주차 링크
+- `/week/0`–`/week/8`: 원문 전체 강의, 목차, 이전/다음 주 이동, 용어 설명, 핵심 수식과 보충 예시 펼치기, 코드 복사, 체크포인트, 선택 과제
+- `/glossary`: 용어 검색과 관련 주차 링크
 - `/playground`: Loss, Gradient Descent, Hyperplane, Feature Space, Activation, CNN Filter, Residual Learning
-- `/assignments`: 27개 선택 과제와 강의 페이지에 연동되는 체크박스
+- `/assignments`: 47개 선택 문항(27개 단계별 완료 체크)와 강의 페이지에 연동되는 체크박스
 - `/final-project`: MNIST/CIFAR-10 선택 프로젝트와 ResNet 복습
 
 ## 구조
@@ -38,7 +38,7 @@ npm을 사용하는 환경에서는 `npm install`과 `npm run dev`도 가능합�
 ```text
 app/                    # App Router와 다크 테마, 반응형 스타일
 components/
-  markdown.tsx          # LessonMarkdown, MathDetails, WhyBox
+  markdown.tsx          # LessonMarkdown, WhyBox
   assignments.tsx       # 공통 Check / Apply / Explore 표시
   interactive.tsx       # CodeBlock, TermChip, GlossarySearch
   progress.tsx          # 진행도 Provider, 체크박스, 주차·전체 진행도
@@ -58,11 +58,13 @@ qa/                     # 브라우저 검증 스크린샷
 
 ## 콘텐츠 편집과 원문 보존
 
-기준 문서는 루트의 `ml_fundamentals_sig_website_content.md`입니다. `scripts/import-content.mjs`가 9개 주차를 나눠 frontmatter를 붙입니다. 문단·수식·코드·체크포인트·과제는 보존하며 제목 계층만 통일합니다. 재실행하면 주차 파일을 원문으로부터 다시 생성하므로 직접 편집한 내용은 먼저 백업하세요.
+기준 원고는 `content-source/revised/`에 보존한 `ml_sig_revised_content`입니다. 주차 순서는 1 모델·손실, 2 선형 분류, 3 Feature Space, 4 Gradient Descent·Chain Rule, 5 MLP·Backpropagation, 6 학습·일반화, 7 CNN, 8 ResNet입니다.
 
-`check:content`는 9개 강의가 원문과 일치하는지, 27개 과제가 있는지, 124개 수식이 KaTeX에서 유효한지 검사합니다. 원문을 의도적으로 확장하면 이 기준도 함께 관리하세요.
+`scripts/import-revised-content.mjs <원고 폴더>`로 가져옵니다. 사이트에 맞게 중복 주차 제목을 제거하고 제목 계층을 한 단계 낮춥니다. 원고의 손상된 form-feed + `rac` 네 곳은 `\frac`으로 복구하며 원본 사본은 그대로 보존합니다. 재실행은 `content`의 주차 파일을 덮어씁니다.
 
-원문의 Week 1/2 Loss ASCII 스케치 두 개는 렌더링 단계에서 올바른 U자 스케치로 대체합니다. 원문 파일 자체는 수정하지 않습니다. 실제 수치 그래프는 실험실에서 확인할 수 있습니다.
+`check:content`는 9개 강의, 47개 문항, 547개 수식과 14개 명시적 접힘 영역을 검증합니다. 핵심 수식은 항상 표시하고, 원고의 `<details><summary>제목</summary>…</details>` 보충 내용만 접습니다. 다른 raw HTML은 실행하지 않습니다.
+
+**기존 운영 DB에는 이번 배포 전후로 최신 `db/setup.sql` 전체를 Neon SQL Editor에서 실행해야 합니다.** 원고 교체와 기록 이관, 퀴즈 재공개 절차는 [개정 커리큘럼 적용 안내](docs/REVISED-CURRICULUM.md)를 따르세요. 새 코드가 이전 관리자 수정본을 잘못 표시하지 않도록 개정 버전의 수정본만 읽습니다.
 
 ### 콘텐츠 배치
 
@@ -76,7 +78,7 @@ qa/                     # 브라우저 검증 스크린샷
 
 ## 로그인·배포
 
-주차별 실행 가능한 노트북은 `notebooks/week-0.ipynb`–`week-8.ipynb`입니다. 열린 강의에서 **Colab에서 실습하기**로 접근합니다. 관리자 본문 탭에서 링크를 변경/숨기려면 `db/migrations/003_colab_links.sql`을 한 번 적용하세요. 기존 DB에서도 기본 링크 조회는 동작합니다. [노트북 사용법](notebooks/README.md)
+주차별 실행 가능한 노트북은 `notebooks/week-0.ipynb`–`week-8.ipynb`입니다. 열린 강의에서 **Colab에서 실습하기**로 접근합니다. 관리자 본문 탭에서 링크를 변경/숨기려면 `db/migrations/003_colab_links.sql`을 한 번 적용하세요. 이번 개정에서는 최신 `db/setup.sql` 전체를 적용하세요. [노트북 사용법](notebooks/README.md)
 
 2–8주차는 계정별 퀴즈 암호로 순차 해제합니다. 관리자 `/admin/course`에서 회차별 퀴즈와 Markdown 본문을 편집하고 인터랙티브 실험을 삽입할 수 있습니다. 기존 DB에는 `db/migrations/002_course_editor.sql`을 적용하세요. [퀴즈·편집 사용법](docs/COURSE-EDITOR.md)을 확인하세요.
 
@@ -84,7 +86,7 @@ qa/                     # 브라우저 검증 스크린샷
 
 ## 진행도
 
-`ml-sig-progress-v1` localStorage 키에 개념 및 과제별 boolean을 저장합니다. 한 주의 모든 개념을 체크하면 이해 완료로 표시됩니다. Week 0 및 선택 과제는 전체 8주 완료 조건에 포함하지 않습니다. localStorage 접근 실패/잘못된 데이터에도 강의는 정상 동작하며, 저장 불가 시 현재 페이지의 메모리에서 체크를 유지합니다. 로그인 전 기록은 기기에만 저장됩니다. 로그인 후에는 Neon에 저장해 기기 간 동기화하며, 기존 기기 기록은 명시적으로 가져올 때만 반영합니다.
+`ml-sig-progress-v2` localStorage 키에 개념 및 과제별 boolean을 저장합니다. 한 주의 모든 개념을 체크하면 이해 완료로 표시됩니다. Week 0 및 선택 과제는 전체 8주 완료 조건에 포함하지 않습니다. localStorage 접근 실패/잘못된 데이터에도 강의는 정상 동작하며, 저장 불가 시 현재 페이지의 메모리에서 체크를 유지합니다. 로그인 전 기록은 기기에만 저장됩니다. 로그인 후에는 Neon에 저장해 기기 간 동기화하며, 기존 기기 기록은 명시적으로 가져올 때만 반영합니다.
 
 ## 브라우저 검증
 

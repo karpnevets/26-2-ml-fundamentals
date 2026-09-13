@@ -29,11 +29,11 @@ export default async function Page({
   const lesson = lessons().find((w) => String(w.week) === id);
   if (!lesson) notFound();
   const [edit] = await query(
-    "SELECT body,revision,to_jsonb(lesson_edits)->>'colab_url' AS colab_url FROM lesson_edits WHERE week=$1",
+    "SELECT body,revision,to_jsonb(lesson_edits)->>'colab_url' AS colab_url FROM lesson_edits WHERE to_jsonb(lesson_edits)->>'content_revision'='revised-v2' AND week=$1",
     [lesson.week],
   );
   const [quiz] = await query(
-    "SELECT questions,instructions,published,revision,password_hash <> $2 AS has_password FROM week_quizzes WHERE week=$1",
+    "SELECT questions,instructions,published,revision,password_hash <> $2 AS has_password FROM week_quizzes WHERE to_jsonb(week_quizzes)->>'content_revision'='revised-v2' AND week=$1",
     [lesson.week, ""],
   );
   const initialQuiz = quiz

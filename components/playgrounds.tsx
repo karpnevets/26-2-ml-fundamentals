@@ -604,9 +604,9 @@ export function ResidualPlayground() {
 }
 export const playgrounds = [
   { title: "Loss Playground", week: 1, Component: LossPlayground },
-  { title: "Gradient Descent", week: 2, Component: GradientPlayground },
-  { title: "Hyperplane", week: 3, Component: HyperplanePlayground },
-  { title: "Feature Space", week: 4, Component: FeaturePlayground },
+  { title: "Gradient Descent", week: 4, Component: GradientPlayground },
+  { title: "Hyperplane", week: 2, Component: HyperplanePlayground },
+  { title: "Feature Space", week: 3, Component: FeaturePlayground },
   { title: "Activation", week: 5, Component: ActivationPlayground },
   { title: "CNN Filter", week: 7, Component: CNNPlayground },
   { title: "Residual Learning", week: 8, Component: ResidualPlayground },
@@ -627,7 +627,9 @@ export function PlaygroundPage({
   allowedWeeks?: number[];
 }) {
   const [active, A] = useState(0);
-  const available = playgrounds.filter((p) => allowedWeeks.includes(p.week));
+  const available = playgrounds
+    .filter((p) => allowedWeeks.includes(p.week))
+    .sort((a, b) => a.week - b.week);
   const p = available[active] || available[0];
   return (
     <>

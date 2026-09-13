@@ -6,14 +6,6 @@ import rehypeHighlight from "rehype-highlight";
 import { CodeBlock } from "./interactive";
 import { WeekPlayground } from "./playgrounds";
 import { visualizationOptions } from "@/lib/visualizations";
-export function MathDetails({ children }: { children: React.ReactNode }) {
-  return (
-    <details className="math-details">
-      <summary>수식 더 보기</summary>
-      {children}
-    </details>
-  );
-}
 export function WhyBox({ children }: { children: React.ReactNode }) {
   return (
     <aside className="why">
@@ -23,6 +15,46 @@ export function WhyBox({ children }: { children: React.ReactNode }) {
   );
 }
 export function LessonMarkdown({ text }: { text: string }) {
+  // Only the source's explicit disclosure syntax is accepted. Other raw HTML
+  // stays disabled, including event handlers and script tags in admin edits.
+  const lines = text.split("\n");
+  let fenced = false;
+  for (let start = 0; start < lines.length; start++) {
+    if (/^\s*```/.test(lines[start])) fenced = !fenced;
+    if (fenced || lines[start].trim() !== "<details>") continue;
+    const summary = lines[start + 1]
+      ?.trim()
+      .match(/^<summary>(.*?)<\/summary>$/);
+    if (!summary) continue;
+    let depth = 1;
+    let end = start + 2;
+    let codeFence = false;
+    for (; end < lines.length; end++) {
+      if (/^\s*```/.test(lines[end])) codeFence = !codeFence;
+      if (codeFence) continue;
+      if (lines[end].trim() === "<details>") depth++;
+      if (lines[end].trim() === "</details>" && --depth === 0) break;
+    }
+    if (depth !== 0) continue;
+    return (
+      <>
+        <LessonMarkdown text={lines.slice(0, start).join("\n")} />
+        <details className="math-details">
+          <summary>
+            <Markdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+              components={{ p: ({ children }) => <span>{children}</span> }}
+            >
+              {summary[1].replace(/\\\(/g, "$ ").replace(/\\\)/g, " $")}
+            </Markdown>
+          </summary>
+          <LessonMarkdown text={lines.slice(start + 2, end).join("\n")} />
+        </details>
+        <LessonMarkdown text={lines.slice(end + 1).join("\n")} />
+      </>
+    );
+  }
   const pieces = text.split(/^```visualization\s*\n([a-z]+)\s*\n```\s*$/gm);
   if (pieces.length > 1)
     return (
@@ -39,12 +71,6 @@ export function LessonMarkdown({ text }: { text: string }) {
       </>
     );
   const normalized = text
-    // The source's two rough loss sketches are replaced by an accurate U shape.
-    // The original Markdown remains available unchanged in content/.
-    .replace(
-      /```text\nLoss\n \^[\s\S]*?```/g,
-      "```text\nLoss\n ^\n |  *           *\n |    *       *\n |      *   *\n |        *\n +----------------> w\n          3\n```",
-    )
     .replace(/\\\[/g, () => "$$")
     .replace(/\\\]/g, () => "$$")
     .replace(/\\\(/g, "$")
@@ -56,18 +82,6 @@ export function LessonMarkdown({ text }: { text: string }) {
         rehypePlugins={[rehypeKatex, rehypeHighlight]}
         components={{
           pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
-          span: ({ node, className, children, ...props }) =>
-            className?.includes("katex-display") ? (
-              <MathDetails>
-                <span className={className} {...props}>
-                  {children}
-                </span>
-              </MathDetails>
-            ) : (
-              <span className={className} {...props}>
-                {children}
-              </span>
-            ),
           blockquote: ({ children }) => (
             <blockquote className="key-idea">{children}</blockquote>
           ),
