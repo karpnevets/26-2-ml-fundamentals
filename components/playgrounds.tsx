@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useId } from "react";
 type Point = { x: number; y: number };
 export function Slider({
   label,
@@ -51,6 +51,7 @@ function Plot({
   ymax?: number;
   label: string;
 }) {
+  const clipId = useId();
   const sx = (x: number) => 40 + ((x - xmin) / (xmax - xmin)) * 490,
     sy = (y: number) => 250 - ((y - ymin) / (ymax - ymin)) * 220;
   const samples = Array.from({ length: 161 }, (_, i) => {
@@ -60,7 +61,7 @@ function Plot({
   return (
     <svg viewBox="0 0 560 290" role="img" aria-label={label} className="plot">
       <defs>
-        <clipPath id={"clip-" + label.replace(/[^a-z]/gi, "")}>
+        <clipPath id={clipId}>
           <rect x="40" y="25" width="490" height="225" />
         </clipPath>
       </defs>
@@ -81,7 +82,7 @@ function Plot({
           </text>
         </g>
       ))}
-      <g clipPath={`url(#clip-${label.replace(/[^a-z]/gi, "")})`}>
+      <g clipPath={`url(#${clipId})`}>
         {fn && (
           <polyline
             points={samples}
@@ -620,13 +621,18 @@ export function WeekPlayground({ week }: { week: number }) {
     </section>
   ) : null;
 }
-export function PlaygroundPage() {
+export function PlaygroundPage({
+  allowedWeeks = [0, 1, 2, 3, 4, 5, 6, 7, 8],
+}: {
+  allowedWeeks?: number[];
+}) {
   const [active, A] = useState(0);
-  const p = playgrounds[active];
+  const available = playgrounds.filter((p) => allowedWeeks.includes(p.week));
+  const p = available[active] || available[0];
   return (
     <>
       <div className="lab-tabs" role="group" aria-label="실험 선택">
-        {playgrounds.map((p, i) => (
+        {available.map((p, i) => (
           <button key={p.week} aria-pressed={active === i} onClick={() => A(i)}>
             {String(i + 1).padStart(2, "0")} {p.title}
           </button>

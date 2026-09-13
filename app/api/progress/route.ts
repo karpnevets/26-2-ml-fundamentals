@@ -5,6 +5,7 @@ import { validProgressChange } from "@/lib/progress-policy";
 import { readProgress, writeProgress } from "@/lib/progress-repository";
 import { query } from "@/lib/query";
 import { json, smallJson } from "@/lib/http";
+import { courseAccess } from "@/lib/course";
 export const dynamic = "force-dynamic";
 export async function GET() {
   try {
@@ -43,6 +44,10 @@ export async function PATCH(request: Request) {
         { error: "존재하는 개념·과제와 완료 여부만 전송할 수 있습니다." },
         400,
       );
+    const { weeks } = await courseAccess();
+    const item = learningItems().find((i) => i.id === change.id);
+    if (!item || !weeks.includes(item.week))
+      return json({ error: "먼저 해당 주차의 잠금을 해제하세요." }, 403);
     await writeProgress(query, user.id, change.id, change.completed);
     return json({ ok: true });
   } catch {

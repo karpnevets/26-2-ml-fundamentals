@@ -1,6 +1,9 @@
 import { PlaygroundPage } from "@/components/playgrounds";
 export const metadata = { title: "실험실" };
-export default function Page() {
+import { courseAccess } from "@/lib/course";
+export const dynamic = "force-dynamic";
+export default async function Page() {
+  const { weeks } = await courseAccess();
   return (
     <div className="page">
       <header className="subpage-header">
@@ -8,7 +11,8 @@ export default function Page() {
         <h1>직접 움직여 보는 머신러닝</h1>
         <p>숫자 하나를 바꿔 보세요. 예측, 경계, 그리고 이해가 달라집니다.</p>
       </header>
-      <PlaygroundPage />
+      <p>열린 주차의 실험만 표시됩니다.</p>
+      <PlaygroundPage allowedWeeks={weeks} />
     </div>
   );
 }

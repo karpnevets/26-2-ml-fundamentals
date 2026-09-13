@@ -76,6 +76,8 @@ qa/                     # 브라우저 검증 스크린샷
 
 ## 로그인·배포
 
+2–8주차는 계정별 퀴즈 암호로 순차 해제합니다. 관리자 `/admin/course`에서 회차별 퀴즈와 Markdown 본문을 편집하고 인터랙티브 실험을 삽입할 수 있습니다. 기존 DB에는 `db/migrations/002_course_editor.sql`을 적용하세요. [퀴즈·편집 사용법](docs/COURSE-EDITOR.md)을 확인하세요.
+
 직접 해야 할 설정은 [Google·Neon·Vercel 배포 안내](docs/DEPLOYMENT.md)를 따르세요. 구현 구조와 검증은 [인증·DB 문서](docs/AUTH-IMPLEMENTATION.md)에 정리되어 있습니다. 새 관리자 화면은 `/admin`, 로그인은 `/login`, 개인정보 안내는 `/privacy`입니다.
 
 ## 진행도
@@ -87,10 +89,10 @@ qa/                     # 브라우저 검증 스크린샷
 개발 또는 프로덕션 서버를 3000 포트에서 실행한 뒤:
 
 ```bash
-pnpm check:browser
+pnpm check:course-browser
 ```
 
-설치된 Google Chrome을 headless로 사용합니다. 다른 환경은 `scripts/browser-check.mjs`의 channel 옵션을 바꾸거나 Playwright Chromium을 설치해 사용하세요. 모든 라우트, 수식 오류, 데스크톱/모바일 넘침, 새로고침 후 진행도, 과제 공유, 실험실, 용어 검색, localStorage 비활성화를 검사합니다. 스크린샷은 `qa/`에 저장됩니다.
+설치된 Google Chrome을 headless로 사용합니다. 잠금·제목 숨김·힌트·익명 API 접근 차단 및 관리자 편집 컴포넌트의 문항/저장 충돌/미리보기/모바일 화면을 검사합니다. 관리자 UI 저장 응답은 테스트 브라우저에서만 모의 처리하며 운영 코드에 인증 우회 경로를 추가하지 않습니다. `pnpm test`는 PostgreSQL 테스트 DB에서 순차 해제·시도 제한·회원 분리·마이그레이션을 검사합니다. 스크린샷은 `qa/`에 저장됩니다. 기존 `check:browser`와 `check:auth-browser`는 잠금 도입 전의 전체 공개 과정 시나리오이므로 현재 회귀 검증에는 `check:course-browser`를 사용합니다.
 
 ## 범위
 

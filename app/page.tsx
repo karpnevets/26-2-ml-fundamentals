@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { lessons } from "@/lib/content";
 import { OverallProgress, WeekStatus } from "@/components/progress";
-export default function Home() {
+import { courseAccess } from "@/lib/course";
+import { WeekLock } from "@/components/week-lock";
+export const dynamic = "force-dynamic";
+export default async function Home() {
+  const { weeks } = await courseAccess();
   const all = lessons();
   return (
     <div className="page home">
@@ -48,7 +52,9 @@ export default function Home() {
             </div>
           </div>
           <OverallProgress
-            weeks={all.map(({ week, concepts }) => ({ week, concepts }))}
+            weeks={all
+              .filter((w) => weeks.includes(w.week))
+              .map(({ week, concepts }) => ({ week, concepts }))}
           />
         </div>
       </section>
@@ -73,34 +79,38 @@ export default function Home() {
           <span>30–60 min ↗</span>
         </Link>
         <div className="roadmap">
-          {all.slice(1).map((w, i) => (
-            <Link
-              className="roadmap-card"
-              href={`/week/${w.week}`}
-              key={w.week}
-            >
-              <div className="card-top">
-                <span className="eyebrow">
-                  WEEK {String(w.week).padStart(2, "0")}
+          {all.slice(1).map((w, i) =>
+            !weeks.includes(w.week) ? (
+              <WeekLock key={w.week} week={w.week} />
+            ) : (
+              <Link
+                className="roadmap-card"
+                href={`/week/${w.week}`}
+                key={w.week}
+              >
+                <div className="card-top">
+                  <span className="eyebrow">
+                    WEEK {String(w.week).padStart(2, "0")}
+                  </span>
+                  <WeekStatus week={w.week} concepts={w.concepts} />
+                </div>
+                <span className="path-number">
+                  {String(i + 1).padStart(2, "0")}
                 </span>
-                <WeekStatus week={w.week} concepts={w.concepts} />
-              </div>
-              <span className="path-number">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3>{w.title}</h3>
-              <p>{w.question}</p>
-              <div className="concept-labels">
-                {w.concepts.slice(0, 4).map((c) => (
-                  <span key={c}>{c}</span>
-                ))}
-              </div>
-              <div className="card-bottom">
-                <span>{w.estimated_time} · 기초부터</span>
-                <span aria-hidden>↗</span>
-              </div>
-            </Link>
-          ))}
+                <h3>{w.title}</h3>
+                <p>{w.question}</p>
+                <div className="concept-labels">
+                  {w.concepts.slice(0, 4).map((c) => (
+                    <span key={c}>{c}</span>
+                  ))}
+                </div>
+                <div className="card-bottom">
+                  <span>{w.estimated_time} · 기초부터</span>
+                  <span aria-hidden>↗</span>
+                </div>
+              </Link>
+            ),
+          )}
         </div>
       </section>
       <section className="faq">

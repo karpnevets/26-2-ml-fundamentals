@@ -5,7 +5,7 @@ export function json(data: unknown, status = 200) {
     headers: { "Cache-Control": "private, no-store" },
   });
 }
-export async function smallJson(request: Request) {
+export async function smallJson(request: Request, limit = 16384) {
   if (
     !request.headers
       .get("content-type")
@@ -13,7 +13,7 @@ export async function smallJson(request: Request) {
       .startsWith("application/json")
   )
     throw new Error("Invalid JSON body");
-  if (Number(request.headers.get("content-length") || 0) > 16384)
+  if (Number(request.headers.get("content-length") || 0) > limit)
     throw new Error("Request too large");
   const reader = request.body?.getReader();
   if (!reader) throw new Error("Missing body");
@@ -23,7 +23,7 @@ export async function smallJson(request: Request) {
     const { done, value } = await reader.read();
     if (done) break;
     size += value.byteLength;
-    if (size > 16384) {
+    if (size > limit) {
       await reader.cancel();
       throw new Error("Request too large");
     }

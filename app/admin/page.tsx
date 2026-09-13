@@ -51,6 +51,9 @@ export default async function Page() {
           <span className="eyebrow accent">SIG · ADMIN</span>
           <h1>학습 진행 현황</h1>
           <p>어디까지 이해했는지, 어느 주차에서 도움이 필요한지 살펴보세요.</p>
+          <Link className="primary" href="/admin/course">
+            회차별 퀴즈 · 본문 관리 →
+          </Link>
         </header>
         <AdminDashboard learners={learners} />
       </div>

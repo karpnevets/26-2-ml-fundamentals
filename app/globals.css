@@ -1525,3 +1525,167 @@ button:disabled {
     font-size: 2.2rem;
   }
 }
+
+/* Quiz gates and course authoring */
+.locked-week {
+  width: 100%;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  color: var(--muted, #a3ada5);
+  cursor: pointer;
+  text-align: center;
+}
+.locked-week:hover {
+  border-color: #b5e69a;
+  color: #b5e69a;
+}
+.unlock-dialog {
+  color: #edf2eb;
+  background: #181e1b;
+  border: 1px solid #52604f;
+  border-radius: 14px;
+  width: min(440px, calc(100vw - 32px));
+  padding: 32px;
+}
+.unlock-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+}
+.unlock-dialog h2 {
+  font-size: 1.5rem;
+  margin: 0 20px 16px 0;
+}
+.unlock-dialog p {
+  margin: 12px 0;
+  line-height: 1.7;
+}
+.unlock-dialog form,
+.unlock-dialog label {
+  display: grid;
+  gap: 14px;
+}
+.unlock-dialog a {
+  display: block;
+  margin-top: 20px;
+}
+.dialog-close {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font-size: 28px;
+  cursor: pointer;
+}
+.unlock-dialog input,
+.editor-page input:not([type="checkbox"]),
+.editor-page textarea,
+.editor-page select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #49564b;
+  border-radius: 6px;
+  background: #101612;
+  color: #edf2eb;
+  font: inherit;
+}
+.editor-page {
+  max-width: 1100px;
+}
+.editor-page h1 {
+  font-size: 2rem;
+  margin: 28px 0;
+}
+.editor-page p {
+  line-height: 1.8;
+  margin: 16px 0;
+}
+.editor-page button:not(.primary) {
+  padding: 10px 16px;
+  border: 1px solid #49564b;
+  border-radius: 6px;
+  background: #1b251d;
+  color: #edf2eb;
+  cursor: pointer;
+}
+.editor-page button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.editor-toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: end;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.editor-toolbar label {
+  display: grid;
+  gap: 8px;
+}
+.editor-field,
+.quiz-fields label {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+}
+.editor-page textarea {
+  min-height: 130px;
+  resize: vertical;
+  line-height: 1.7;
+}
+.editor-page .body-editor {
+  min-height: 520px;
+  font-family: monospace;
+  tab-size: 2;
+  margin-bottom: 20px;
+}
+.quiz-fields {
+  min-width: 0;
+  margin: 24px 0;
+}
+.quiz-fields legend {
+  padding: 0 12px;
+  color: #b5e69a;
+}
+.quiz-image {
+  display: block;
+  max-width: 100%;
+  max-height: 600px;
+  height: auto;
+  object-fit: contain;
+  margin: 20px auto;
+}
+.quiz-question {
+  margin: 24px 0;
+}
+.editor-message {
+  min-height: 28px;
+  color: #b5e69a;
+}
+@media (max-width: 600px) {
+  .editor-page h1 {
+    font-size: 1.5rem;
+  }
+  .unlock-dialog {
+    padding: 24px;
+  }
+  .editor-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .locked-week {
+    min-height: 200px;
+  }
+}
+.editor-form {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}

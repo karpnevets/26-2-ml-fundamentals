@@ -9,19 +9,21 @@ import { TermChip } from "@/components/interactive";
 import { ProgressCheck, WeekStatus } from "@/components/progress";
 import { WeekPlayground } from "@/components/playgrounds";
 import { ResNetRecap } from "@/components/resnet-recap";
-export function generateStaticParams() {
-  return lessons().map((w) => ({ id: String(w.week) }));
-}
+import { courseAccess, editedLessons } from "@/lib/course";
+import { WeekLock } from "@/components/week-lock";
+export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const { weeks } = await courseAccess();
   return {
     title:
-      lessons().find((w) => String(w.week) === id)?.title ||
-      "강의를 찾을 수 없습니다",
+      (weeks.includes(Number(id))
+        ? lessons().find((w) => String(w.week) === id)?.title
+        : `Week ${id} · 잠긴 주차`) || "강의를 찾을 수 없습니다",
   };
 }
 export default async function Week({
@@ -30,10 +32,22 @@ export default async function Week({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const all = lessons();
+  const { weeks } = await courseAccess();
+  if (!lessons().some((w) => String(w.week) === id)) notFound();
+  if (!weeks.includes(Number(id)))
+    return (
+      <div className="page narrow">
+        <h1>Week {id}</h1>
+        <p>직전 주차의 퀴즈로 암호를 찾아 잠금을 해제하세요.</p>
+        <WeekLock week={Number(id)} />
+      </div>
+    );
+  const all = await editedLessons();
   const w = all.find((w) => String(w.week) === id);
   if (!w) notFound();
-  const parts = sections(w.body);
+  const parts = sections(w.body).filter(
+    (s) => weeks.includes(w.week + 1) || !s.title.includes("Preview"),
+  );
   return (
     <div className="page">
       <div className="breadcrumbs">
@@ -77,7 +91,9 @@ export default async function Week({
             </div>
           </section>
           <div id="experiment">
-            <WeekPlayground week={w.week} />
+            {!w.body.includes("```visualization") && (
+              <WeekPlayground week={w.week} />
+            )}
             {(w.week === 0 || w.week === 6) && (
               <p className="muted">
                 아래의 짧은 코드 예제부터 읽어 보세요. 각 줄을 자신의 말로
@@ -138,7 +154,12 @@ export default async function Week({
             )}
             {w.week < 8 ? (
               <Link href={`/week/${w.week + 1}`}>
-                Week {w.week + 1} →<strong>{all[w.week + 1].title}</strong>
+                Week {w.week + 1} →
+                <strong>
+                  {weeks.includes(w.week + 1)
+                    ? all[w.week + 1].title
+                    : "🔒 잠긴 주차"}
+                </strong>
               </Link>
             ) : (
               <Link href="/final-project">

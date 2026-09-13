@@ -2,7 +2,19 @@ import { document } from "@/lib/content";
 import { LessonMarkdown } from "@/components/markdown";
 import { ResNetRecap } from "@/components/resnet-recap";
 export const metadata = { title: "최종 프로젝트" };
-export default function Page() {
+import { courseAccess } from "@/lib/course";
+import { WeekLock } from "@/components/week-lock";
+export const dynamic = "force-dynamic";
+export default async function Page() {
+  const { weeks } = await courseAccess();
+  if (!weeks.includes(8))
+    return (
+      <div className="page narrow">
+        <h1>최종 프로젝트</h1>
+        <p>8주차 잠금을 해제한 뒤 볼 수 있습니다.</p>
+        <WeekLock week={8} />
+      </div>
+    );
   return (
     <div className="page narrow">
       <header className="subpage-header">

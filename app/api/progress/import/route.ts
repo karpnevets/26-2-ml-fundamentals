@@ -5,6 +5,7 @@ import { validImport } from "@/lib/progress-policy";
 import { importProgress, readProgress } from "@/lib/progress-repository";
 import { query } from "@/lib/query";
 import { json, smallJson } from "@/lib/http";
+import { courseAccess } from "@/lib/course";
 export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
   if (!sameOrigin(request, process.env.AUTH_URL))
@@ -27,6 +28,19 @@ export async function POST(request: Request) {
       return json({ error: "잘못된 요청입니다." }, 400);
     }
     if (!ids) return json({ error: "잘못된 학습 기록입니다." }, 400);
+    const { weeks } = await courseAccess();
+    if (
+      ids.some(
+        (id) => !weeks.includes(learningItems().find((i) => i.id === id)!.week),
+      )
+    )
+      return json(
+        {
+          error:
+            "잠긴 주차의 기록이 포함되어 있습니다. 해당 주차를 연 뒤 가져오세요.",
+        },
+        403,
+      );
     const imported = await importProgress(query, user.id, ids);
     return json({ imported, values: await readProgress(query, user.id) });
   } catch {

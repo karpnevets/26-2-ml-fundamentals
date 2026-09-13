@@ -15,7 +15,13 @@ export default async function Page({
 }) {
   const params = await searchParams;
   const configured = authConfigured();
-  const next = params.next === "/admin" ? "/admin" : "/";
+  const next =
+    params.next &&
+    /^(\/admin(?:\/course(?:\/[0-8])?)?|\/(?:week|quiz)\/[0-8])$/.test(
+      params.next,
+    )
+      ? params.next
+      : "/";
   return (
     <div className="page narrow">
       <section className="login-panel panel">

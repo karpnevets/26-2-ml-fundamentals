@@ -36,10 +36,16 @@ export function TermChip({ term }: { term: string }) {
     </details>
   );
 }
-export function GlossarySearch() {
+export function GlossarySearch({
+  allowedWeeks = [0, 1, 2, 3, 4, 5, 6, 7, 8],
+}: {
+  allowedWeeks?: number[];
+}) {
   const [query, setQuery] = useState("");
-  const list = glossary.filter((t) =>
-    (t.term + " " + t.definition).toLowerCase().includes(query.toLowerCase()),
+  const list = glossary.filter(
+    (t) =>
+      allowedWeeks.includes(t.week) &&
+      (t.term + " " + t.definition).toLowerCase().includes(query.toLowerCase()),
   );
   return (
     <>

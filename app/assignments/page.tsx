@@ -4,7 +4,12 @@ import { lessons, sections } from "@/lib/content";
 import { LessonMarkdown } from "@/components/markdown";
 import { ProgressCheck } from "@/components/progress";
 export const metadata = { title: "선택 과제" };
-export default function Page() {
+import { courseAccess, editedLessons } from "@/lib/course";
+import { WeekLock } from "@/components/week-lock";
+export const dynamic = "force-dynamic";
+export default async function Page() {
+  const { weeks } = await courseAccess();
+  const all = await editedLessons();
   return (
     <div className="page narrow">
       <header className="subpage-header">
@@ -16,7 +21,9 @@ export default function Page() {
           모든 과제는 선택입니다. 정답뿐 아니라 이유를 자신의 말로 적어 보세요.
         </p>
       </header>
-      {lessons().map((w) => {
+      {all.map((w) => {
+        if (!weeks.includes(w.week))
+          return <WeekLock key={w.week} week={w.week} />;
         const s = sections(w.body).find((s) => s.title === "선택 과제");
         return (
           <section className="assignment-week" key={w.week}>
