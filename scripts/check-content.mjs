@@ -36,7 +36,9 @@ for (let week = 0; week < 9; week++) {
   assert(content.includes("## Checkpoint"));
   for (const level of ["Check", "Apply", "Explore"]) {
     const tasks = [
-      ...content.matchAll(new RegExp(`^### \\[${level}\\]`, "gm")),
+      ...content.matchAll(
+        new RegExp(`^#{3,4} (?:\\d+\\. )?\\[${level}\\]`, "gm"),
+      ),
     ];
     assert(tasks.length > 0);
     assignments += tasks.length;
@@ -49,6 +51,15 @@ for (let week = 0; week < 9; week++) {
     katex.renderToString(m[1] ?? m[2], {
       throwOnError: true,
       displayMode: !!m[1],
+    });
+    equations++;
+  }
+  for (const m of noCode.matchAll(
+    /\$\$([\s\S]*?)\$\$|(?<!\\)\$([^\n$]+?)\$/g,
+  )) {
+    katex.renderToString(m[1] ?? m[2], {
+      throwOnError: true,
+      displayMode: m[1] !== undefined,
     });
     equations++;
   }

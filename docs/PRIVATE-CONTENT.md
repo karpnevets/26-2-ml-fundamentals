@@ -41,6 +41,25 @@ ORDER BY week;
 
 ## 이후 원고 반영
 
+### 2026-09-15: 1–8주차 LaTeX v2 원본 교체
+
+운영 Neon SQL Editor에서 로컬 **`.private-course/replace-week-1-8-latex-v2.sql` 전체**를 실행합니다. 최초 이관을 마친 DB용이며, 코드 배포만으로 본문이 바뀌지는 않습니다.
+
+- 지정된 `week-md/ml_sig_latex_v2/ml_sig_latex_v2`의 8개 원고를 사용합니다. 원문은 `content-source/revised`에 보관하고 사이트용 제목 계층만 정리한 본문을 DB에 넣습니다.
+- 1–8주차 기존 원본과 관리자 수정본은 `curriculum_content_archive`의 revision=`week-1-8-latex-v2`에 백업합니다. 기존 수정본의 본문도 새 원고로 바꾸되 Colab 링크는 유지합니다.
+- 0주차, 퀴즈, 암호, 잠금 해제 기록과 기존 학습 기록은 유지합니다. 새 개념 체크 항목은 미완료 상태로 추가되므로 표시되는 진도율은 달라질 수 있습니다. 기존 항목과 기록은 삭제하지 않습니다.
+- 같은 SQL을 다시 실행해도 이후 관리자 편집을 덮어쓰지 않습니다. SQL과 원고는 Git에서 제외됩니다. 노트북 파일은 갱신하지 않습니다.
+
+확인 쿼리:
+
+```sql
+SELECT revision, applied_at FROM curriculum_revisions
+WHERE revision = 'week-1-8-latex-v2';
+SELECT week, length(body) AS characters FROM course_originals ORDER BY week;
+```
+
+이 교체 SQL은 `node scripts/replace-week-originals.mjs SOURCE_DIRECTORY`로 생성합니다. 다른 버전의 원고 교체에는 새 revision을 사용해야 합니다.
+
 관리자 페이지에서 본문/퀴즈를 편집하면 DB에 저장됩니다. `.private-course/import-content.sql`은 이번 최초 이관용이며, 나중에 파일을 수정한 뒤 재실행해도 기존 DB 원본을 갱신하지 않습니다. 이후 새 원본 교체에는 별도의 버전 이관을 만들어야 합니다.
 
 `node scripts/export-private-content.mjs`는 로컬 비공개 원고에서 이번 이관용 SQL을 재생성합니다. 기존 공개 저장소의 퀴즈 초안은 `.private-course/quiz-drafts.json`으로 옮겼습니다. 공개 스키마 재생성은 `node scripts/export-db-sql.mjs`입니다.

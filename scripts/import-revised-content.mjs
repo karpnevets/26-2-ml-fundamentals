@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import { pathToFileURL } from "node:url";
 
 export function normalizeLesson(source) {
   const { data, content } = matter(source.replace(/\u000crac/g, "\\frac"));
@@ -16,7 +17,10 @@ export function normalizeLesson(source) {
   return matter.stringify(body.trim() + "\n", data);
 }
 
-if (process.argv[2]) {
+if (
+  process.argv[2] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
   const source = path.resolve(process.argv[2]);
   const files = fs.readdirSync(source);
   for (let week = 0; week <= 8; week++) {
