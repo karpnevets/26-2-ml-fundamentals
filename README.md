@@ -88,3 +88,7 @@ pnpm check:course-browser
 ## 범위
 
 요청한 A–G 실험실은 모두 구현했습니다. 실제 Python 실행기, 신경망 학습 서버, 전체 CNN 시뮬레이터, 자동 채점과 실제 외부 배포는 포함하지 않습니다. Google 로그인·Neon 저장·관리자 진행 현황 코드는 구현되어 있으며 실제 서비스 계정 연결은 배포 안내에 따라 설정합니다. Activation의 미분 그래프는 선택 확장으로 남겨 두었습니다. 실험은 가벼운 수치·시각화이며, 과제 코드는 학습자가 Colab 등에서 실행합니다.
+
+## 일반 사용자 요청 보안
+
+CSP, 요청 크기·출처 검사, 계정별 API 호출 제한을 적용합니다. 이번 배포 전에 `db/migrations/006_request_limits.sql`을 Neon에 실행하고, Vercel 입구에서 비로그인 대량 트래픽도 제한하려면 [보안 설정 안내](docs/PUBLIC-SECURITY.md)의 Firewall 규칙을 적용하세요. 코드 푸시만으로 Vercel WAF 설정은 바뀌지 않습니다.

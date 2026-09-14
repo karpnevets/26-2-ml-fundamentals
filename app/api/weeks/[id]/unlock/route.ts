@@ -1,3 +1,4 @@
+import { requestLimit } from "@/lib/rate-limit";
 import { currentActor } from "@/lib/auth/actor";
 import { sameOrigin } from "@/lib/auth/policy";
 import { query } from "@/lib/query";
@@ -16,6 +17,8 @@ export async function POST(
     if (!user) return json({ error: "학교 계정으로 로그인해 주세요." }, 401);
     const week = Number((await params).id);
     if (!validWeek(week, 2)) return json({ error: "잘못된 주차입니다." }, 400);
+    const limited = await requestLimit(user.id, "unlock");
+    if (limited) return limited;
     let body;
     try {
       body = await smallJson(request);

@@ -1,3 +1,4 @@
+import { requestLimit } from "@/lib/rate-limit";
 import { currentActor } from "@/lib/auth/actor";
 import { sameOrigin } from "@/lib/auth/policy";
 import { learningItems } from "@/lib/learning-items";
@@ -11,6 +12,8 @@ export async function GET() {
   try {
     const user = await currentActor();
     if (!user) return json({ error: "로그인이 필요합니다." }, 401);
+    const limited = await requestLimit(user.id, "read");
+    if (limited) return limited;
     return json({
       ownerId: user.id,
       values: await readProgress(query, user.id),
@@ -30,6 +33,8 @@ export async function PATCH(request: Request) {
         { error: "계정이 바뀌었습니다. 기록을 다시 불러오세요." },
         409,
       );
+    const limited = await requestLimit(user.id, "write");
+    if (limited) return limited;
     let change;
     try {
       change = validProgressChange(

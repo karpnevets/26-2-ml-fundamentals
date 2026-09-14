@@ -1,3 +1,4 @@
+import { requestLimit } from "@/lib/rate-limit";
 import { currentActor } from "@/lib/auth/actor";
 import { sameOrigin } from "@/lib/auth/policy";
 import { learningItems } from "@/lib/learning-items";
@@ -18,6 +19,8 @@ export async function POST(request: Request) {
         { error: "계정이 바뀌었습니다. 기록을 다시 불러오세요." },
         409,
       );
+    const limited = await requestLimit(user.id, "import");
+    if (limited) return limited;
     let ids;
     try {
       ids = validImport(

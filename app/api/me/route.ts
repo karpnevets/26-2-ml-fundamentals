@@ -1,3 +1,4 @@
+import { requestLimit } from "@/lib/rate-limit";
 import { currentActor } from "@/lib/auth/actor";
 import { authConfigured, localOnlyMode } from "@/lib/auth/config";
 import { json } from "@/lib/http";
@@ -10,6 +11,10 @@ export async function GET() {
     });
   try {
     const user = await currentActor();
+    if (user) {
+      const limited = await requestLimit(user.id, "read");
+      if (limited) return limited;
+    }
     return json({ mode: user ? "account" : "guest", user });
   } catch {
     return json(

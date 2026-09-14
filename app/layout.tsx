@@ -7,6 +7,7 @@ import {
 } from "@/components/progress";
 import "./globals.css";
 import "katex/dist/katex.min.css";
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: {
     default: "ML Fundamentals · SCSC",
