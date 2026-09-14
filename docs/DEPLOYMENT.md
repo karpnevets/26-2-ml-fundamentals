@@ -1,3 +1,5 @@
+> 현재 버전은 본문/퀴즈를 DB에 저장합니다. 최초 자료 이관은 [비공개 자료 이관 안내](PRIVATE-CONTENT.md)를 먼저 따르세요. 아래의 이전 파일 기반 안내보다 우선합니다.
+
 # 직접 설정할 일: Google OAuth + Neon + Vercel
 
 기존 배포에 퀴즈 잠금·본문 편집 기능을 추가할 때는 Neon SQL Editor에서 `db/migrations/002_course_editor.sql`을 먼저 실행하세요. 운영 방법은 [퀴즈·본문 편집 안내](COURSE-EDITOR.md)에 있습니다. 새 DB는 갱신된 `db/setup.sql` 하나로 준비할 수 있습니다.

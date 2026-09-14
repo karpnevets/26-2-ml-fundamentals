@@ -1,6 +1,6 @@
 # ML Fundamentals SIG
 
-비전공자를 위한 **선택 0주차 + 본 과정 8주** 머신러닝 학습 사이트입니다. Next.js App Router, TypeScript, Tailwind CSS, Markdown, KaTeX를 사용하며 Google 학교 계정 로그인과 Neon PostgreSQL에 학습 기록을 저장할 수 있습니다. 인증 환경변수가 없는 로컬 환경에서는 기존 기기 저장 모드로 동작합니다.
+비전공자를 위한 **선택 0주차 + 본 과정 8주** 머신러닝 학습 사이트입니다. Next.js App Router, TypeScript, Tailwind CSS, Markdown, KaTeX를 사용하며 Google 학교 계정 로그인과 Neon PostgreSQL에 학습 기록을 저장할 수 있습니다. 강의 원본과 퀴즈는 Neon DB에서만 읽습니다. 강의를 로컬에서 확인하려면 개발용 DB 연결이 필요합니다.
 
 ## 실행
 
@@ -30,7 +30,7 @@ npm을 사용하는 환경에서는 `npm install`과 `npm run dev`도 가능합�
 - `/week/0`–`/week/8`: 원문 전체 강의, 목차, 이전/다음 주 이동, 용어 설명, 핵심 수식과 보충 예시 펼치기, 코드 복사, 체크포인트, 선택 과제
 - `/glossary`: 용어 검색과 관련 주차 링크
 - `/playground`: Loss, Gradient Descent, Hyperplane, Feature Space, Activation, CNN Filter, Residual Learning
-- `/assignments`: 47개 선택 문항(27개 단계별 완료 체크)와 강의 페이지에 연동되는 체크박스
+- `/assignments`: 48개 선택 문항(27개 단계별 완료 체크)와 강의 페이지에 연동되는 체크박스
 - `/final-project`: MNIST/CIFAR-10 선택 프로젝트와 ResNet 복습
 
 ## 구조
@@ -45,36 +45,23 @@ components/
   table-of-contents.tsx # 모바일 접힘 목차
   playgrounds.tsx       # 7종 클라이언트 실험, 공통 Slider/Plot/Stats
   resnet-recap.tsx       # ResNet 구성요소와 이전 주차 연결
-content/
-  week-0-python.md … week-8-resnet.md
-  glossary.json
-  final-project.md
-  index.md              # 원문 전체 사이트 구조 제안
-  site-guide.md         # 원문의 추가 페이지·교육·운영 지침 보존
-lib/                    # 파일 로딩, frontmatter, 강의 섹션 분리
+lib/course-catalog.json # 공개 커리큘럼 메타데이터
+db/migrations/          # 자료를 포함하지 않는 DB 스키마
+.private-course/        # 비공개 로컬 이관 SQL (Git 제외)
+lib/                    # DB 조회, 접근 권한, 강의 섹션 분리
 scripts/                # 원문 분리 및 검증
 qa/                     # 브라우저 검증 스크린샷
 ```
 
-## 콘텐츠 편집과 원문 보존
+## 콘텐츠 저장
 
-기준 원고는 `content-source/revised/`에 보존한 `ml_sig_revised_content`입니다. 주차 순서는 1 모델·손실, 2 선형 분류, 3 Feature Space, 4 Gradient Descent·Chain Rule, 5 MLP·Backpropagation, 6 학습·일반화, 7 CNN, 8 ResNet입니다.
+강의 원본·관리자 수정본·퀴즈 Markdown과 정답은 DB에 보관합니다. 저장소에 본문 파일을 포함하거나 런타임에서 파일을 대체 원고로 읽지 않습니다. 용어 정의와 최종 프로젝트도 DB에서 읽습니다. 커리큘럼 제목·개념 체크 항목은 `lib/course-catalog.json`에 남겨 둡니다.
 
-`scripts/import-revised-content.mjs <원고 폴더>`로 가져옵니다. 사이트에 맞게 중복 주차 제목을 제거하고 제목 계층을 한 단계 낮춥니다. 원고의 손상된 form-feed + `rac` 네 곳은 `\frac`으로 복구하며 원본 사본은 그대로 보존합니다. 재실행은 `content`의 주차 파일을 덮어씁니다.
+이번 최초 이관에는 로컬의 `.private-course/import-content.sql` 전체를 Neon SQL Editor에서 실행해야 합니다. 공개 `db/setup.sql`만으로는 본문이 등록되지 않습니다. [DB 자료 이관 안내](docs/PRIVATE-CONTENT.md)를 확인하세요.
 
-`check:content`는 9개 강의, 47개 문항, 547개 수식과 14개 명시적 접힘 영역을 검증합니다. 핵심 수식은 항상 표시하고, 원고의 `<details><summary>제목</summary>…</details>` 보충 내용만 접습니다. 다른 raw HTML은 실행하지 않습니다.
+`content/`, `content-source/`, `.private-course/`는 비공개 로컬 작업용이며 Git/Vercel 업로드에서 제외됩니다. 사용자 선택에 따라 과거 Git 커밋은 정리하지 않았으므로, 과거 자료는 이전 커밋에서 열람할 수 있습니다. 노트북 공개 방식은 유지합니다.
 
-**기존 운영 DB에는 이번 배포 전후로 최신 `db/setup.sql` 전체를 Neon SQL Editor에서 실행해야 합니다.** 원고 교체와 기록 이관, 퀴즈 재공개 절차는 [개정 커리큘럼 적용 안내](docs/REVISED-CURRICULUM.md)를 따르세요. 새 코드가 이전 관리자 수정본을 잘못 표시하지 않도록 개정 버전의 수정본만 읽습니다.
-
-### 콘텐츠 배치
-
-- 각 주차 본문·checkpoint·summary·preview → 해당 `/week/n`
-- Check / Apply / Explore → 각 주차 및 `/assignments`에서 같은 Markdown 사용
-- 원문 용어 정의 및 필수 용어 보충 → `content/glossary.json` / `/glossary`
-- 최종 프로젝트 A/B → `/final-project`
-- 사이트 구조·디자인·강의 운영 원칙 → 홈/공통 컴포넌트에 반영; 전체 문장은 `index.md`, `site-guide.md`에 보존
-- Kernel Trick, Universal Approximation Theorem → 해당 주차의 선택 심화 접힘 영역
-- 최종 ResNet 목표 → Week 8 본문 및 선택형 recap
+관리자 `/admin/course`에서 본문과 퀴즈를 편집합니다. 본문 원본 복원은 DB에 등록된 원본을 사용합니다. 검토를 마친 0주차는 이번 이관 SQL에 포함되어 있습니다.
 
 ## 로그인·배포
 

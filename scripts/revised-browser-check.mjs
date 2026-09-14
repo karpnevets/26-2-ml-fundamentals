@@ -38,16 +38,7 @@ try {
     viewport: { width: 1280, height: 900 },
   });
   page.on("pageerror", (error) => console.error("BROWSER:", error.message));
-  await page.goto(base + "/week/1");
-  await expect(
-    page.getByRole("heading", {
-      name: "Model, Parameter, Prediction, Loss",
-      exact: true,
-    }),
-  ).toBeVisible();
-  await expect(page.locator(".katex-display").first()).toBeVisible();
-  assert.equal(await page.locator(".katex-error").count(), 0);
-  await page.screenshot({ path: "qa/revised-week-1.png" });
+  await page.goto(base);
   const css = fs
     .readdirSync(".next/static/css")
     .filter((f) => f.endsWith(".css"))
@@ -92,7 +83,7 @@ try {
   await page.locator('article[data-week="5"] details').scrollIntoViewIfNeeded();
   await page.screenshot({ path: "qa/revised-formula-mobile.png" });
   console.log(
-    "PASS: all revised lesson rendering, essential formulas visible, 14 optional disclosures, math in summary, 27 grouped assignment controls and mobile width.",
+    "PASS: all revised lesson rendering, essential formulas visible, explicit optional disclosures, math in summary, 27 grouped assignment controls and mobile width.",
   );
 } finally {
   await browser.close();

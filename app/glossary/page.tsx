@@ -1,5 +1,6 @@
 import { GlossarySearch } from "@/components/interactive";
 export const metadata = { title: "용어 사전" };
+import { glossaryForWeeks } from "@/lib/course-documents";
 import { courseAccess } from "@/lib/course";
 export const dynamic = "force-dynamic";
 export default async function Page() {
@@ -14,7 +15,10 @@ export default async function Page() {
           확인하세요.
         </p>
       </header>
-      <GlossarySearch allowedWeeks={weeks} />
+      <GlossarySearch
+        glossary={await glossaryForWeeks(weeks)}
+        allowedWeeks={weeks}
+      />
     </div>
   );
 }

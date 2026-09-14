@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState, type ReactNode } from "react";
-import { glossary } from "@/lib/glossary";
+import type { Term } from "@/lib/glossary";
 export function CodeBlock({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLPreElement>(null);
   const [status, setStatus] = useState("복사");
@@ -25,21 +25,26 @@ export function CodeBlock({ children }: { children: ReactNode }) {
     </div>
   );
 }
-export function TermChip({ term }: { term: string }) {
-  const entry = glossary.find(
-    (t) => t.term.toLowerCase() === term.toLowerCase(),
-  );
+export function TermChip({
+  term,
+  definition,
+}: {
+  term: string;
+  definition?: string;
+}) {
   return (
     <details className="term">
       <summary>{term}</summary>
-      <div>{entry?.definition || "이번 주 본문에서 차근차근 살펴봅니다."}</div>
+      <div>{definition || "이번 주 본문에서 차근차근 살펴봅니다."}</div>
     </details>
   );
 }
 export function GlossarySearch({
+  glossary,
   allowedWeeks = [0, 1, 2, 3, 4, 5, 6, 7, 8],
 }: {
   allowedWeeks?: number[];
+  glossary: Term[];
 }) {
   const [query, setQuery] = useState("");
   const list = glossary.filter(

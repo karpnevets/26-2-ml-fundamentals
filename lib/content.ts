@@ -1,6 +1,4 @@
-import fs from "node:fs";
-import path from "node:path";
-import matter from "gray-matter";
+import catalog from "./course-catalog.json";
 export type Lesson = {
   week: number;
   title: string;
@@ -10,16 +8,7 @@ export type Lesson = {
   body: string;
 };
 export function lessons(): Lesson[] {
-  return fs
-    .readdirSync(path.join(process.cwd(), "content"))
-    .filter((f) => /^week-\d/.test(f))
-    .sort()
-    .map((f) => {
-      const { data, content } = matter(
-        fs.readFileSync(path.join(process.cwd(), "content", f), "utf8"),
-      );
-      return { ...data, body: content } as Lesson;
-    });
+  return catalog.map((w) => ({ ...w, body: "" }));
 }
 export function sections(body: string) {
   return body
@@ -35,10 +24,4 @@ export function sections(body: string) {
           };
     })
     .filter((s) => s.title || s.body.replace(/---/g, "").trim());
-}
-export function document(name: string) {
-  return fs.readFileSync(
-    path.join(process.cwd(), "content", name + ".md"),
-    "utf8",
-  );
 }

@@ -1,4 +1,4 @@
-import { document } from "@/lib/content";
+import { courseDocument } from "@/lib/course-documents";
 import { LessonMarkdown } from "@/components/markdown";
 import { ResNetRecap } from "@/components/resnet-recap";
 export const metadata = { title: "최종 프로젝트" };
@@ -25,7 +25,9 @@ export default async function Page() {
           집중하세요.
         </p>
       </header>
-      <LessonMarkdown text={document("final-project").replace(/^# .+\n/, "")} />
+      <LessonMarkdown
+        text={(await courseDocument("final-project")).replace(/^# .+\n/, "")}
+      />
       <ResNetRecap />
     </div>
   );

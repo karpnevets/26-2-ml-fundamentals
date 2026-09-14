@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { currentActor } from "@/lib/auth/actor";
+import { originalLesson } from "@/lib/course-documents";
 import { lessons } from "@/lib/content";
 import { query } from "@/lib/query";
 import { quizTemplate } from "@/lib/quiz-templates";
@@ -28,6 +29,7 @@ export default async function Page({
     );
   const lesson = lessons().find((w) => String(w.week) === id);
   if (!lesson) notFound();
+  const original = await originalLesson(lesson.week);
   const [edit] = await query(
     "SELECT body,revision,to_jsonb(lesson_edits)->>'colab_url' AS colab_url FROM lesson_edits WHERE to_jsonb(lesson_edits)->>'content_revision'='revised-v2' AND week=$1",
     [lesson.week],
@@ -52,8 +54,8 @@ export default async function Page({
       </h1>
       <CourseEditor
         week={lesson.week}
-        original={lesson.body}
-        initialBody={String(edit?.body ?? lesson.body)}
+        original={original}
+        initialBody={String(edit?.body ?? original)}
         initialColabUrl={String(
           edit?.colab_url ?? defaultColabUrl(lesson.week),
         )}

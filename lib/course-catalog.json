@@ -1,0 +1,143 @@
+[
+  {
+    "title": "Python / Colab Foundations",
+    "week": 0,
+    "question": "머신러닝 코드를 스스로 읽고 수정하려면 Python에서 무엇을 알아야 할까?",
+    "concepts": [
+      "Colab",
+      "Python",
+      "Function",
+      "List",
+      "NumPy",
+      "Shape",
+      "Indexing",
+      "Vectorized Operation"
+    ],
+    "estimated_time": "120–180 min",
+    "optional": true
+  },
+  {
+    "title": "Model, Parameter, Prediction, Loss",
+    "week": 1,
+    "question": "모델이 학습한다는 것은 정확히 무엇이 바뀐다는 뜻일까?",
+    "concepts": [
+      "Model",
+      "Parameter",
+      "Feature",
+      "Prediction",
+      "Target",
+      "Loss",
+      "Dataset Loss"
+    ],
+    "estimated_time": "120–150 min"
+  },
+  {
+    "title": "Vectors & Linear Classification",
+    "week": 2,
+    "question": "여러 feature를 이용해 어떻게 하나의 결정 경계를 만들까?",
+    "concepts": [
+      "Vector",
+      "Dot Product",
+      "Matrix Multiplication",
+      "Linear Classifier",
+      "Hyperplane",
+      "Perceptron"
+    ],
+    "estimated_time": "120–150 min"
+  },
+  {
+    "title": "Feature Space & Nonlinear Problems",
+    "week": 3,
+    "question": "직선 하나로 풀 수 없는 문제를 representation을 바꾸어 풀 수 있을까?",
+    "concepts": [
+      "Feature Space",
+      "Linear Separability",
+      "Feature Transformation",
+      "Polynomial Feature",
+      "XOR"
+    ],
+    "estimated_time": "120–150 min"
+  },
+  {
+    "title": "Optimization, Gradient Descent & Chain Rule",
+    "week": 4,
+    "question": "모델의 parameter를 loss가 작아지는 방향으로 어떻게 바꿀까?",
+    "concepts": [
+      "Derivative",
+      "Partial Derivative",
+      "Gradient",
+      "Gradient Descent",
+      "Learning Rate",
+      "Chain Rule",
+      "Computational Graph"
+    ],
+    "estimated_time": "150–180 min"
+  },
+  {
+    "title": "MLP, Activation & Backpropagation",
+    "week": 5,
+    "question": "모델이 feature transformation 자체를 학습하게 만들 수 있을까?",
+    "concepts": [
+      "Linear Layer",
+      "MLP",
+      "Activation",
+      "Sigmoid",
+      "Tanh",
+      "ReLU",
+      "Backpropagation",
+      "Autograd"
+    ],
+    "estimated_time": "150–180 min"
+  },
+  {
+    "title": "Classification Training & Generalization",
+    "week": 6,
+    "question": "Neural Network를 실제 classification 문제에 어떻게 학습시키고 평가할까?",
+    "concepts": [
+      "Logit",
+      "Softmax",
+      "Cross-Entropy",
+      "Mini-batch",
+      "Epoch",
+      "Optimizer",
+      "Train/Validation/Test",
+      "Generalization",
+      "Overfitting"
+    ],
+    "estimated_time": "150–180 min"
+  },
+  {
+    "title": "CNN & Image Inductive Bias",
+    "week": 7,
+    "question": "이미지가 가진 공간적 구조를 모델 architecture에 어떻게 반영할까?",
+    "concepts": [
+      "Image Tensor",
+      "Convolution",
+      "Kernel",
+      "Feature Map",
+      "Stride",
+      "Padding",
+      "Channel",
+      "Pooling",
+      "Receptive Field",
+      "Inductive Bias"
+    ],
+    "estimated_time": "150–180 min"
+  },
+  {
+    "title": "Residual Learning & ResNet",
+    "week": 8,
+    "question": "깊은 CNN이 기존 정보를 잃지 않으면서 더 쉽게 학습되도록 만들 수 있을까?",
+    "concepts": [
+      "Deep Network",
+      "Degradation",
+      "Residual Function",
+      "Skip Connection",
+      "Identity Mapping",
+      "Gradient Path",
+      "Batch Normalization",
+      "ResNet BasicBlock"
+    ],
+    "estimated_time": "150–180 min"
+  }
+]

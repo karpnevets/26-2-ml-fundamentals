@@ -1,4 +1,4 @@
-import lessonContext from "@/content/lesson-context.json";
+import { lessonContextForWeek, glossaryForWeeks } from "@/lib/course-documents";
 import { Assignments } from "@/components/assignments";
 import { TableOfContents } from "@/components/table-of-contents";
 import Link from "next/link";
@@ -45,6 +45,8 @@ export default async function Week({
   const all = await editedLessons();
   const w = all.find((w) => String(w.week) === id);
   if (!w) notFound();
+  const context = await lessonContextForWeek(w.week);
+  const glossary = await glossaryForWeeks(weeks);
   const parts = sections(w.body).filter(
     (s) => weeks.includes(w.week + 1) || !s.title.includes("Preview"),
   );
@@ -98,18 +100,26 @@ export default async function Week({
         />
         <article className="lesson-content">
           <section id="why">
-            <WhyBox>{lessonContext[w.week].why}</WhyBox>
+            <WhyBox>{context.why}</WhyBox>
             <p className="connection">
               <strong>이전 개념과 연결 · </strong>
-              {lessonContext[w.week].previous}
+              {context.previous}
             </p>
             <p className="connection">
               <strong>이번 주에 필요한 것 · </strong>
-              {lessonContext[w.week].prerequisite}
+              {context.prerequisite}
             </p>
             <div className="term-row">
               {w.concepts.map((c) => (
-                <TermChip key={c} term={c} />
+                <TermChip
+                  key={c}
+                  term={c}
+                  definition={
+                    glossary.find(
+                      (t) => t.term.toLowerCase() === c.toLowerCase(),
+                    )?.definition
+                  }
+                />
               ))}
             </div>
           </section>

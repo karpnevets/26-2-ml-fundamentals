@@ -26,7 +26,20 @@ test("sequential access, safe quiz projection, publish validation and password n
   assert(safeImage("https://example.com/a.png"));
   for (let week = 2; week <= 8; week++) {
     const template = quizTemplate(week);
-    const draft = { ...template, password: "123", published: true };
+    const draft = {
+      ...template,
+      questions: [
+        {
+          number: 1,
+          description: "Test question",
+          answer: "test-value",
+          image: "",
+        },
+      ],
+      instructions: "Test instructions",
+      password: "123",
+      published: true,
+    };
     assert(validateQuiz(draft));
     assert(
       !validateQuiz({
@@ -56,23 +69,23 @@ test("real PostgreSQL unlock isolation, order, rate limit, cooldown, persistence
     );
     const A = String(a.id),
       B = String(b.id);
-    assert.equal((await unlockWeek(query, A, 2, "64")).status, 409);
+    assert.equal((await unlockWeek(query, A, 2, "test-unlock-key")).status, 409);
     for (const week of [2, 3])
       await query(
         "INSERT INTO week_quizzes(week,password_hash,published) VALUES($1,$2,true)",
-        [week, hashPassword("64")],
+        [week, hashPassword("test-unlock-key")],
       );
-    assert.equal((await unlockWeek(query, A, 3, "64")).status, 403);
+    assert.equal((await unlockWeek(query, A, 3, "test-unlock-key")).status, 403);
     for (let i = 0; i < 10; i++)
       assert.equal((await unlockWeek(query, A, 2, "wrong")).status, 400);
-    assert.equal((await unlockWeek(query, A, 2, "64")).status, 429);
-    assert.equal((await unlockWeek(query, B, 2, "64")).status, 200);
+    assert.equal((await unlockWeek(query, A, 2, "test-unlock-key")).status, 429);
+    assert.equal((await unlockWeek(query, B, 2, "test-unlock-key")).status, 200);
     await query(
       "UPDATE quiz_attempts SET window_start=now()-interval '16 minutes' WHERE user_id=$1::uuid",
       [A],
     );
-    assert.equal((await unlockWeek(query, A, 2, "64")).status, 200);
-    assert.equal((await unlockWeek(query, A, 3, "64")).status, 200);
+    assert.equal((await unlockWeek(query, A, 2, "test-unlock-key")).status, 200);
+    assert.equal((await unlockWeek(query, A, 3, "test-unlock-key")).status, 200);
     await query("UPDATE week_quizzes SET published=false");
     assert.equal((await unlockWeek(query, A, 3, "anything")).status, 200);
     await db.exec(schema);

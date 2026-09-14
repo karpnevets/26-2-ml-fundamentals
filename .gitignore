@@ -11,3 +11,9 @@ playwright-report/
 .pnpm-store/
 qa/
 .notebook-venv/
+
+# Teaching sources and generated SQL contain private lesson/quiz content.
+content/
+content-source/
+.private-course/
+ml_fundamentals_sig_website_content.md

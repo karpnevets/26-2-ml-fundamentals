@@ -1,27 +1,21 @@
 import fs from "node:fs";
-import matter from "gray-matter";
 export function catalog() {
-  return fs
-    .readdirSync("content")
-    .filter((f) => /^week-\d/.test(f))
-    .sort()
-    .flatMap((f) => {
-      const { data } = matter(fs.readFileSync("content/" + f, "utf8"));
-      return [
-        ...data.concepts.map((label) => ({
-          id: `w${data.week}:${label}`,
-          week: data.week,
-          kind: "concept",
-          label,
-        })),
-        ...["Check", "Apply", "Explore"].map((label) => ({
-          id: `w${data.week}:assignment:${label}`,
-          week: data.week,
-          kind: "assignment",
-          label,
-        })),
-      ];
-    });
+  return JSON.parse(fs.readFileSync("lib/course-catalog.json", "utf8")).flatMap(
+    (data) => [
+      ...data.concepts.map((label) => ({
+        id: `w${data.week}:${label}`,
+        week: data.week,
+        kind: "concept",
+        label,
+      })),
+      ...["Check", "Apply", "Explore"].map((label) => ({
+        id: `w${data.week}:assignment:${label}`,
+        week: data.week,
+        kind: "assignment",
+        label,
+      })),
+    ],
+  );
 }
 export const schema = () =>
   fs

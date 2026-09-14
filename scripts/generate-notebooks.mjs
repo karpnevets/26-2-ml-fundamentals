@@ -1,4 +1,3 @@
-import matter from 'gray-matter';
 import fs from 'node:fs';
 const numpy=`import sys
 import numpy as np
@@ -229,7 +228,7 @@ const md=source=>({cell_type:'markdown',metadata:{},source:source.split(/(?<=\n)
 const code=source=>({cell_type:'code',metadata:{},execution_count:null,outputs:[],source:source.split(/(?<=\n)/)});
 fs.mkdirSync('notebooks',{recursive:true});
 [0,1,3,4,2,5,6,7,8].map(i => labs[i]).forEach((lab,week)=>{
- lab.title = matter(fs.readFileSync("content/"+fs.readdirSync("content").find(f=>f.startsWith(`week-${week}-`)),"utf8")).data.title;
+ lab.title = JSON.parse(fs.readFileSync("lib/course-catalog.json","utf8"))[week].title;
  const cells=[md(`# Week ${week} · ${lab.title}\n\n${lab.goal}\n\n[강의로 돌아가기](https://ml-fundamentals-karpnet.vercel.app/week/${week})\n\n**사용법**: 파일 → Drive에 사본 저장 → 위에서 아래로 실행하세요. 런타임을 다시 시작했다면 설정 셀부터 다시 실행합니다. CPU 기준의 짧은 실습이며 데이터 다운로드가 없습니다. 실행 결과는 사이트에 자동 저장되지 않습니다.\n`),md('## 1. 실행 준비\n\nColab 기본 Python 런타임의 NumPy·Matplotlib'+(week>=5?'·PyTorch':'')+'를 사용합니다. import 오류가 나면 새 기본 런타임으로 연결하세요.\n'),code(lab.setup),md('## 2. 실행 전 예상\n\n'+lab.predict+'\n\n아래 칸에 예상과 이유를 먼저 적으세요.\n'),md('**내 예상:**\n\n(여기에 작성)\n'),md('## 3. 실행하고 관찰하기\n\n아래 parameter를 확인하고 두 코드 셀을 순서대로 실행하세요.\n'),code(lab.params),code(lab.code.replace('同じ形のparameterを同じ初期値で比較','같은 형태의 parameter를 같은 초기값으로 비교')),md('## 4. Apply · 한 가지씩 바꾸기\n\n'+lab.apply+'\n\nparameter를 바꿀 때는 parameter 셀과 아래 실행 셀을 모두 다시 실행하세요.\n'),md('| 바꾼 값 | 실행 전 예상 | 실제 결과 | 설명 |\n|---|---|---|---|\n| 기본값 | | | |\n| 변경 1 | | | |\n| 변경 2 | | | |\n'),md('## 5. Explore · 선택 확장\n\n'+lab.explore+'\n'),code('# 선택 확장 코드를 여기에 작성하세요.\n'),md('## 6. 내 말로 설명하기\n\n- 예상과 결과가 달랐던 점은?\n- 이번 실습을 한 문장으로 설명하면?\n- 아직 설명하기 어려운 부분은?\n\n답을 자신의 Drive 사본에 남긴 뒤 [사이트로 돌아가 학습 기록을 체크](https://ml-fundamentals-karpnet.vercel.app/week/'+week+')하세요. 노트북 실행만으로 주차 잠금이나 완료 기록이 자동 변경되지는 않습니다.\n')];
  cells.forEach((c,i)=>c.id=`w${week}-cell-${i}`);
  fs.writeFileSync(`notebooks/week-${week}.ipynb`,JSON.stringify({nbformat:4,nbformat_minor:5,metadata:{kernelspec:{display_name:'Python 3',language:'python',name:'python3'},language_info:{name:'python'},colab:{name:`Week ${week} - ${lab.title}.ipynb`,provenance:[]}},cells},null,2)+'\n');
