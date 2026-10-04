@@ -51,17 +51,17 @@ export default async function Page() {
           <span className="eyebrow site-accent">SIG · ADMIN</span>
           <h1>학습 진행 현황</h1>
           <p>어디까지 이해했는지, 어느 주차에서 도움이 필요한지 살펴보세요.</p>
-          <Link className="primary" href="/admin/course">
-            회차별 퀴즈 · 본문 관리 →
-          </Link>
-          <p>
-            <Link className="secondary" href="/admin/assignments">
+          <nav className="admin-actions" aria-label="관리자 메뉴">
+            <Link className="primary" href="/admin/course">
+              회차별 퀴즈 · 본문 관리 →
+            </Link>
+            <Link className="primary" href="/admin/assignments">
               선택 과제 관리 →
-            </Link>{" "}
-            <Link className="secondary" href="/admin/submissions">
+            </Link>
+            <Link className="primary" href="/admin/submissions">
               선택 과제 피드백 →
             </Link>
-          </p>
+          </nav>
         </header>
         <AdminDashboard learners={learners} />
       </div>

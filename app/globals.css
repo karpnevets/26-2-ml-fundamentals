@@ -1885,3 +1885,6 @@ button:disabled {
 .submission-review .secondary { display: inline-block; max-width: 100%; }
 .submission-review textarea { resize: vertical; }
 .submission-actions button:disabled, .submission-review button:disabled { opacity: .5; cursor: default; }
+
+.admin-actions { display: flex; flex-wrap: wrap; align-items: stretch; gap: .75rem; margin-top: 1rem; }
+.admin-actions .primary { margin-top: 0; }
