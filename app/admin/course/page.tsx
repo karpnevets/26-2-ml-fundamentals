@@ -32,6 +32,11 @@ export default async function Page() {
           2–8주차는 직전 주차 복습 퀴즈로 엽니다. 퀴즈 초안을 검토하고 실제
           암호를 설정한 뒤 공개하세요.
         </p>
+        <p>
+          <Link className="secondary" href="/admin/assignments">
+            선택 과제 관리 →
+          </Link>
+        </p>
       </header>
       {lessons().map((w) => (
         <section className="panel" key={w.week}>

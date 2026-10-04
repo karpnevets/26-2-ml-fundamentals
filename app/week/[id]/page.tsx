@@ -32,14 +32,20 @@ export default async function Week({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { weeks } = await courseAccess();
+  const { weeks, completed } = await courseAccess();
   if (!lessons().some((w) => String(w.week) === id)) notFound();
   if (!weeks.includes(Number(id)))
     return (
       <div className="page narrow">
         <h1>Week {id}</h1>
-        <p>직전 주차의 퀴즈로 암호를 찾아 잠금을 해제하세요.</p>
-        <WeekLock week={Number(id)} />
+        <p>
+          직전 주차의 개념 체크를 모두 완료한 뒤, 퀴즈로 암호를 찾아 잠금을
+          해제하세요.
+        </p>
+        <WeekLock
+          week={Number(id)}
+          canUnlock={completed.includes(Number(id) - 1)}
+        />
       </div>
     );
   const all = await editedLessons();
@@ -149,7 +155,9 @@ export default async function Week({
               id={s.id}
               key={s.id}
             >
-              {s.title && <h2>{s.title}</h2>}
+              {s.title && (
+                <h2>{s.title === "선택 과제" ? "연습문제" : s.title}</h2>
+              )}
               {s.title.includes("선택 과제") ? (
                 <Assignments body={s.body} week={w.week} />
               ) : s.title.includes("선택 개념") ||
@@ -168,7 +176,8 @@ export default async function Week({
             <span className="eyebrow">MY UNDERSTANDING</span>
             <h2>내 말로 설명할 수 있나요?</h2>
             <p>
-              이해한 개념을 체크하세요. 선택 과제는 주차 완료 조건이 아닙니다.
+              이해한 개념을 모두 체크하면 이번 주차가 완료됩니다. 선택 과제는
+              주차 완료 조건이 아닙니다.
             </p>
             <div className="checks">
               {w.concepts.map((c) => (
@@ -176,6 +185,9 @@ export default async function Week({
               ))}
             </div>
           </section>
+          <p>
+            <Link href="/assignments">선택 프로젝트 살펴보기 →</Link>
+          </p>
           <div className="week-navigation">
             {w.week > 0 ? (
               <Link href={`/week/${w.week - 1}`}>

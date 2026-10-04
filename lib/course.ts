@@ -5,15 +5,26 @@ import { query } from "./query";
 import { accessibleWeeks } from "./course-policy";
 import { lessons } from "./content";
 import { readCourseLessons } from "./course-repository";
+import { readProgress } from "./progress-repository";
+import { completedWeeks } from "./completion";
 export const courseAccess = cache(async () => {
   const user = await currentActor();
-  if (!user) return { user: null, weeks: [0, 1] };
-  if (user.isAdmin) return { user, weeks: accessibleWeeks([], true) };
+  if (!user) return { user: null, weeks: [0, 1], completed: [] as number[] };
+  if (user.isAdmin)
+    return {
+      user,
+      weeks: accessibleWeeks([], true),
+      completed: accessibleWeeks([], true),
+    };
   const rows = await query(
     "SELECT week FROM week_unlocks WHERE user_id=$1::uuid",
     [user.id],
   );
-  return { user, weeks: accessibleWeeks(rows.map((r) => Number(r.week))) };
+  const weeks = accessibleWeeks(rows.map((r) => Number(r.week)));
+  const completed = completedWeeks(await readProgress(query, user.id)).filter(
+    (w) => weeks.includes(w),
+  );
+  return { user, weeks, completed };
 });
 export async function editedLessons() {
   const { weeks } = await courseAccess();

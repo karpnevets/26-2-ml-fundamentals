@@ -21,7 +21,7 @@ export default async function Page({
 }) {
   const week = Number((await params).id);
   if (!validWeek(week, 2)) notFound();
-  const { user, weeks } = await courseAccess();
+  const { user, weeks, completed } = await courseAccess();
   if (!user)
     return (
       <div className="page narrow">
@@ -39,6 +39,23 @@ export default async function Page({
       <div className="page narrow">
         <h1>직전 주차를 먼저 열어 주세요.</h1>
         <Link href={`/week/${week - 1}`}>{week - 1}주차로 이동</Link>
+      </div>
+    );
+  if (
+    !user.isAdmin &&
+    !weeks.includes(week) &&
+    (!weeks.includes(week - 1) || !completed.includes(week - 1))
+  )
+    return (
+      <div className="page narrow">
+        <h1>{week}주차 잠금 해제</h1>
+        <p>
+          Week {week - 1}의 개념 체크를 모두 완료하면 퀴즈를 보고 암호를 입력할
+          수 있습니다.
+        </p>
+        <Link className="primary" href={`/week/${week - 1}`}>
+          직전 주차 학습하기 →
+        </Link>
       </div>
     );
   const [quiz] = await query(
@@ -82,7 +99,7 @@ export default async function Page({
               열린 주차로 이동 →
             </Link>
           ) : (
-            <WeekLock week={week} />
+            <WeekLock week={week} canUnlock={completed.includes(week - 1)} />
           )}
         </>
       )}

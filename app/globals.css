@@ -1863,3 +1863,11 @@ button:disabled {
   opacity: 0.65;
   cursor: wait;
 }
+
+.project-editor form { margin-top: 1.5rem; }
+.project-editor fieldset { border: 0; padding: 0; display: grid; gap: 1rem; min-width: 0; }
+.project-editor label { display: grid; gap: .5rem; }
+.project-editor input:not([type=checkbox]), .project-editor select, .project-editor textarea { width: 100%; min-width: 0; padding: .7rem; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: inherit; font: inherit; }
+.project-editor textarea { resize: vertical; }
+.project-editor .project-publish { display: flex; align-items: center; gap: .6rem; }
+.project-editor > details { margin-top: 1.5rem; }

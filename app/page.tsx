@@ -9,7 +9,7 @@ import { courseAccess } from "@/lib/course";
 import { WeekLock } from "@/components/week-lock";
 export const dynamic = "force-dynamic";
 export default async function Home() {
-  const { weeks } = await courseAccess();
+  const { weeks, completed } = await courseAccess();
   const all = lessons();
   return (
     <div className="page home">
@@ -64,7 +64,11 @@ export default async function Home() {
         <div className="roadmap">
           {all.slice(1).map((w, i) =>
             !weeks.includes(w.week) ? (
-              <WeekLock key={w.week} week={w.week} />
+              <WeekLock
+                key={w.week}
+                week={w.week}
+                canUnlock={completed.includes(w.week - 1)}
+              />
             ) : (
               <Link
                 className="roadmap-card"
@@ -116,9 +120,9 @@ export default async function Home() {
         <details>
           <summary>모든 과제를 해야 하나요?</summary>
           <p>
-            Check, Apply, Explore는 모두 선택 과제입니다. 이해한 개념을 체크하면
-            주차 진행도가 기록됩니다. Explore를 하지 않아도 다음 주로 넘어갈 수
-            있습니다.
+            본문 연습문제와 선택 프로젝트는 필수가 아닙니다. 해당 주차의 개념
+            체크를 모두 완료하면 다음 주차의 암호를 입력할 수 있습니다. Week 0은
+            선택 준비 과정입니다.
           </p>
         </details>
       </section>

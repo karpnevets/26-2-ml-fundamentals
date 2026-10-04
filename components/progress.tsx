@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   localProgress,
@@ -43,6 +44,7 @@ const Context = createContext<State>({
 });
 const LOCAL_KEY = "ml-sig-progress-v2";
 export function ProgressProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [values, setValues] = useState<ProgressValues>({}),
     [mode, setMode] = useState<Mode>("loading"),
     [user, setUser] = useState<User | null>(null),
@@ -152,6 +154,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       }
       setValues(next);
       setMessage("계정에 저장했습니다.");
+      router.refresh();
     } catch (e) {
       setMessage(
         e instanceof Error
@@ -185,6 +188,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       const body = await response.json();
       setValues(localProgress(body.values));
       setLocalCount(0);
+      router.refresh();
       setMessage(
         `${body.imported}개 기록을 가져왔습니다. 기존 계정 기록은 유지했습니다.`,
       );

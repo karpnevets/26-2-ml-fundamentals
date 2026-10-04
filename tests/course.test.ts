@@ -69,23 +69,65 @@ test("real PostgreSQL unlock isolation, order, rate limit, cooldown, persistence
     );
     const A = String(a.id),
       B = String(b.id);
-    assert.equal((await unlockWeek(query, A, 2, "test-unlock-key")).status, 409);
+    assert.equal(
+      (await unlockWeek(query, A, 2, "test-unlock-key")).status,
+      403,
+    );
+    await query(
+      "INSERT INTO learning_progress(user_id,item_id,completed) SELECT u.id,i.id,true FROM app_users u CROSS JOIN learning_items i WHERE i.week=1 AND i.kind='concept'",
+    );
+    assert.equal(
+      (await unlockWeek(query, A, 2, "test-unlock-key")).status,
+      409,
+    );
     for (const week of [2, 3])
       await query(
         "INSERT INTO week_quizzes(week,password_hash,published) VALUES($1,$2,true)",
         [week, hashPassword("test-unlock-key")],
       );
-    assert.equal((await unlockWeek(query, A, 3, "test-unlock-key")).status, 403);
+    assert.equal(
+      (await unlockWeek(query, A, 3, "test-unlock-key")).status,
+      403,
+    );
     for (let i = 0; i < 10; i++)
       assert.equal((await unlockWeek(query, A, 2, "wrong")).status, 400);
-    assert.equal((await unlockWeek(query, A, 2, "test-unlock-key")).status, 429);
-    assert.equal((await unlockWeek(query, B, 2, "test-unlock-key")).status, 200);
+    assert.equal(
+      (await unlockWeek(query, A, 2, "test-unlock-key")).status,
+      429,
+    );
+    assert.equal(
+      (await unlockWeek(query, B, 2, "test-unlock-key")).status,
+      200,
+    );
     await query(
       "UPDATE quiz_attempts SET window_start=now()-interval '16 minutes' WHERE user_id=$1::uuid",
       [A],
     );
-    assert.equal((await unlockWeek(query, A, 2, "test-unlock-key")).status, 200);
-    assert.equal((await unlockWeek(query, A, 3, "test-unlock-key")).status, 200);
+    assert.equal(
+      (await unlockWeek(query, A, 2, "test-unlock-key")).status,
+      200,
+    );
+    assert.equal(
+      (await unlockWeek(query, A, 3, "test-unlock-key")).status,
+      403,
+    );
+    assert.equal(
+      (
+        await query(
+          "SELECT * FROM quiz_attempts WHERE user_id=$1::uuid AND week=3",
+          [A],
+        )
+      ).length,
+      0,
+    );
+    await query(
+      "INSERT INTO learning_progress(user_id,item_id,completed) SELECT $1::uuid,id,true FROM learning_items WHERE week=2 AND kind='concept'",
+      [A],
+    );
+    assert.equal(
+      (await unlockWeek(query, A, 3, "test-unlock-key")).status,
+      200,
+    );
     await query("UPDATE week_quizzes SET published=false");
     assert.equal((await unlockWeek(query, A, 3, "anything")).status, 200);
     await db.exec(schema);

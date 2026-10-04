@@ -54,6 +54,11 @@ export default async function Page() {
           <Link className="primary" href="/admin/course">
             회차별 퀴즈 · 본문 관리 →
           </Link>
+          <p>
+            <Link className="secondary" href="/admin/assignments">
+              선택 과제 관리 →
+            </Link>
+          </p>
         </header>
         <AdminDashboard learners={learners} />
       </div>

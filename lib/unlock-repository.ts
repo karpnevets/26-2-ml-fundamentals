@@ -1,6 +1,8 @@
 import type { Query } from "./progress-repository";
 import { accessibleWeeks } from "./course-policy";
 import { matchesPassword } from "./quiz-password";
+import { readProgress } from "./progress-repository";
+import { completedWeeks } from "./completion";
 export async function unlockWeek(
   query: Query,
   userId: string,
@@ -19,6 +21,14 @@ export async function unlockWeek(
   if (!weeks.includes(week - 1))
     return { error: "직전 주차를 먼저 열어 주세요.", status: 403 };
   if (weeks.includes(week)) return { ok: true, status: 200 };
+  if (
+    !admin &&
+    !completedWeeks(await readProgress(query, userId)).includes(week - 1)
+  )
+    return {
+      error: "직전 주차의 개념 체크를 모두 완료한 뒤 암호를 입력해 주세요.",
+      status: 403,
+    };
   const [quiz] = await query(
     "SELECT password_hash FROM week_quizzes WHERE to_jsonb(week_quizzes)->>'content_revision'='revised-v2' AND week=$1 AND published=true",
     [week],

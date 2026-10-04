@@ -1,41 +1,64 @@
-import { Assignments } from "@/components/assignments";
 import Link from "next/link";
-import { lessons, sections } from "@/lib/content";
 import { LessonMarkdown } from "@/components/markdown";
-import { ProgressCheck } from "@/components/progress";
+import { courseAccess } from "@/lib/course";
+import { readProjects } from "@/lib/project-repository";
+import { query } from "@/lib/query";
 export const metadata = { title: "선택 과제" };
-import { courseAccess, editedLessons } from "@/lib/course";
-import { WeekLock } from "@/components/week-lock";
 export const dynamic = "force-dynamic";
 export default async function Page() {
-  const { weeks } = await courseAccess();
-  const all = await editedLessons();
+  const { user, completed } = await courseAccess();
+  const projects = await readProjects(query, completed, user?.isAdmin);
   return (
     <div className="page narrow">
       <header className="subpage-header">
-        <span className="eyebrow site-accent">MAKE IT YOUR OWN</span>
+        <span className="eyebrow site-accent">
+          BUILD · COMPARE · EXPERIMENT
+        </span>
         <h1>선택 과제</h1>
         <p>
-          Check로 확인하고, Apply로 써 보고, Explore로 더 깊이.
-          <br />
-          모든 과제는 선택입니다. 정답뿐 아니라 이유를 자신의 말로 적어 보세요.
+          배운 코드를 확장하고, 직접 실험하며 결과를 비교하는 프로젝트입니다.
+          해당 주차의 개념 체크를 모두 완료하면 과제 내용을 볼 수 있습니다. 선택
+          과제는 다음 주차의 잠금 해제 조건에 포함되지 않습니다.
         </p>
+        {user?.isAdmin && (
+          <Link className="primary" href="/admin/assignments">
+            선택 과제 편집 →
+          </Link>
+        )}
       </header>
-      {all.map((w) => {
-        if (!weeks.includes(w.week))
-          return <WeekLock key={w.week} week={w.week} />;
-        const s = sections(w.body).find((s) => s.title === "선택 과제");
-        return (
-          <section className="assignment-week" key={w.week}>
-            <h2>
-              <Link href={`/week/${w.week}`}>
-                Week {w.week} · {w.title} ↗
-              </Link>
-            </h2>
-            {s && <Assignments body={s.body} week={w.week} collapsible />}
-          </section>
-        );
-      })}
+      {!projects.length && (
+        <p className="panel">아직 공개된 선택 과제가 없습니다.</p>
+      )}
+      {projects.map((p) => (
+        <section className="panel" key={p.id}>
+          <span className="eyebrow">
+            WEEK {p.week} 완료 후 ·{" "}
+            {p.published ? "선택 프로젝트" : "비공개 초안 · 관리자 미리보기"}
+          </span>
+          <h2>{p.title}</h2>
+          {completed.includes(p.week) ? (
+            <>
+              <p>{p.summary}</p>
+              <details>
+                <summary>과제 내용</summary>
+                <LessonMarkdown text={p.body} />
+              </details>
+            </>
+          ) : (
+            <p>
+              {user ? (
+                <Link href={`/week/${p.week}`}>
+                  Week {p.week} 학습을 완료하면 열립니다 →
+                </Link>
+              ) : (
+                <Link href="/login?next=/assignments">
+                  로그인하여 학습 완료 기록을 확인하세요 →
+                </Link>
+              )}
+            </p>
+          )}
+        </section>
+      ))}
     </div>
   );
 }

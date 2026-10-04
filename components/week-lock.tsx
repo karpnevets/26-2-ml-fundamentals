@@ -2,7 +2,13 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-export function WeekLock({ week }: { week: number }) {
+export function WeekLock({
+  week,
+  canUnlock = false,
+}: {
+  week: number;
+  canUnlock?: boolean;
+}) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [password, setPassword] = useState(""),
     [error, setError] = useState(""),
@@ -35,7 +41,11 @@ export function WeekLock({ week }: { week: number }) {
           <path d="M21 34v5" />
         </svg>
         <strong>잠긴 주차</strong>
-        <span>암호를 맞추면 열립니다</span>
+        <span>
+          {canUnlock
+            ? "암호를 맞추면 열립니다"
+            : `${week - 1}주차 학습 완료 후 열 수 있습니다`}
+        </span>
       </button>
       <dialog
         ref={dialog}
@@ -53,58 +63,75 @@ export function WeekLock({ week }: { week: number }) {
           ×
         </button>
         <h2 id={`unlock-title-${week}`}>{week}주차 잠금 해제</h2>
-        <p>직전 주차의 퀴즈를 풀어 암호를 완성하세요.</p>
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setBusy(true);
-            setError("");
-            try {
-              const res = await fetch(`/api/weeks/${week}/unlock`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ password }),
-              });
-              const data = await res.json();
-              if (!res.ok) throw Error(data.error);
-              dialog.current?.close();
-              router.push(`/week/${week}`);
-              router.refresh();
-            } catch (e) {
-              setError(e instanceof Error ? e.message : "잠금 해제 실패");
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          <label>
-            암호
-            <input
-              autoFocus
-              type="password"
-              autoComplete="off"
-              value={password}
-              maxLength={200}
-              required
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
-          <button className="primary" disabled={busy}>
-            {busy ? "확인 중…" : "열기"}
-          </button>
-        </form>
-        {error && (
-          <p role="alert" className="auth-error">
-            {error}
-          </p>
+        <p>
+          {canUnlock
+            ? "직전 주차의 퀴즈를 풀어 암호를 완성하세요."
+            : `Week ${week - 1}의 개념 체크를 모두 완료하면 암호를 입력할 수 있습니다.`}
+        </p>
+        {!canUnlock && (
+          <Link
+            className="primary"
+            href={`/week/${week - 1}`}
+            onClick={() => dialog.current?.close()}
+          >
+            직전 주차 학습하기 →
+          </Link>
         )}
-        <Link
-          className="secondary"
-          href={`/quiz/${week}`}
-          onClick={() => dialog.current?.close()}
-        >
-          힌트 · 퀴즈 보기 →
-        </Link>
+        {canUnlock && (
+          <>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setBusy(true);
+                setError("");
+                try {
+                  const res = await fetch(`/api/weeks/${week}/unlock`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ password }),
+                  });
+                  const data = await res.json();
+                  if (!res.ok) throw Error(data.error);
+                  dialog.current?.close();
+                  router.push(`/week/${week}`);
+                  router.refresh();
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : "잠금 해제 실패");
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            >
+              <label>
+                암호
+                <input
+                  autoFocus
+                  type="password"
+                  autoComplete="off"
+                  value={password}
+                  maxLength={200}
+                  required
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </label>
+              <button className="primary" disabled={busy}>
+                {busy ? "확인 중…" : "열기"}
+              </button>
+            </form>
+            {error && (
+              <p role="alert" className="auth-error">
+                {error}
+              </p>
+            )}
+            <Link
+              className="secondary"
+              href={`/quiz/${week}`}
+              onClick={() => dialog.current?.close()}
+            >
+              힌트 · 퀴즈 보기 →
+            </Link>
+          </>
+        )}
         <Link href={`/login?next=/week/${week}`}>학교 계정 로그인</Link>
       </dialog>
     </>
