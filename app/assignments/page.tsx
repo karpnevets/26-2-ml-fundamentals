@@ -3,11 +3,19 @@ import { LessonMarkdown } from "@/components/markdown";
 import { courseAccess } from "@/lib/course";
 import { readProjects } from "@/lib/project-repository";
 import { query } from "@/lib/query";
+import { NotebookSubmission } from "@/components/notebook-submission";
+import {
+  readOwnSubmissions,
+  submissionStorageReady,
+} from "@/lib/submission-repository";
 export const metadata = { title: "선택 과제" };
 export const dynamic = "force-dynamic";
 export default async function Page() {
   const { user, completed } = await courseAccess();
   const projects = await readProjects(query, completed, user?.isAdmin);
+  const ready = user ? await submissionStorageReady(query) : false;
+  const submissions =
+    user && ready ? await readOwnSubmissions(query, user.id) : [];
   return (
     <div className="page narrow">
       <header className="subpage-header">
@@ -43,6 +51,19 @@ export default async function Page() {
                 <summary>과제 내용</summary>
                 <LessonMarkdown text={p.body} />
               </details>
+              {user &&
+                p.published &&
+                (ready ? (
+                  <NotebookSubmission
+                    projectId={p.id}
+                    ownerId={user.id}
+                    initial={
+                      submissions.find((s) => s.projectId === p.id) || null
+                    }
+                  />
+                ) : (
+                  <p>노트북 제출 기능을 준비 중입니다.</p>
+                ))}
             </>
           ) : (
             <p>

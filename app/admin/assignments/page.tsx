@@ -25,6 +25,11 @@ export default async function Page() {
       <header className="subpage-header">
         <h1>선택 과제 관리</h1>
         <p>
+          <Link className="secondary" href="/admin/submissions">
+            학생 피드백 요청 확인 →
+          </Link>
+        </p>
+        <p>
           초안을 편집하고 검토한 뒤 공개하세요. 공개한 과제도 지정한 주차의 개념
           체크를 모두 완료해야 열람할 수 있습니다.
         </p>

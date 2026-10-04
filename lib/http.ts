@@ -13,6 +13,9 @@ export async function smallJson(request: Request, limit = 16384) {
       .startsWith("application/json")
   )
     throw new Error("Invalid JSON body");
+  return JSON.parse(await smallText(request, limit));
+}
+export async function smallText(request: Request, limit: number) {
   if (Number(request.headers.get("content-length") || 0) > limit)
     throw new Error("Request too large");
   const reader = request.body?.getReader();
@@ -35,5 +38,5 @@ export async function smallJson(request: Request, limit = 16384) {
     bytes.set(chunk, offset);
     offset += chunk.length;
   }
-  return JSON.parse(new TextDecoder().decode(bytes));
+  return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
 }

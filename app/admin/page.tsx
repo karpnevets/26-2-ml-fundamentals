@@ -57,6 +57,9 @@ export default async function Page() {
           <p>
             <Link className="secondary" href="/admin/assignments">
               선택 과제 관리 →
+            </Link>{" "}
+            <Link className="secondary" href="/admin/submissions">
+              선택 과제 피드백 →
             </Link>
           </p>
         </header>

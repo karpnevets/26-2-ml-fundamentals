@@ -1,4 +1,5 @@
 import { sameOrigin } from "./auth/policy";
+import { MAX_NOTEBOOK_BYTES } from "./submission-policy";
 
 export const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -47,11 +48,18 @@ export function rejectRequest(
     if ((deployed && !canonicalUrl) || !sameOrigin(request, canonicalUrl))
       return { status: 403, error: "허용되지 않은 요청 출처입니다." };
     const length = request.headers.get("content-length");
-    const limit = path.startsWith("/api/admin/course/")
-      ? 600000
-      : path.startsWith("/api/auth/") || path === "/login"
-        ? 65536
-        : 16384;
+    const limit =
+      request.method === "PUT" &&
+      /^\/api\/assignments\/[a-z0-9-]{1,80}\/submission$/.test(path)
+        ? MAX_NOTEBOOK_BYTES
+        : /^\/api\/admin\/assignments\/[a-z0-9-]{1,80}\/feedback$/.test(path)
+          ? 24000
+          : path.startsWith("/api/admin/course/") ||
+              /^\/api\/admin\/assignments\/[a-z0-9-]{1,80}$/.test(path)
+            ? 600000
+            : path.startsWith("/api/auth/") || path === "/login"
+              ? 65536
+              : 16384;
     if (length !== null && (!/^\d+$/.test(length) || Number(length) > limit))
       return { status: 413, error: "요청 크기가 너무 큽니다." };
   }
