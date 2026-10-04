@@ -658,6 +658,110 @@ footer {
   padding: 0;
   font-size: inherit;
 }
+.lesson-diagram {
+  margin: 25px 0;
+  padding: clamp(16px, 3vw, 28px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.lesson-diagram figcaption {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  white-space: pre-line;
+}
+.coordinate-diagram svg {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  margin: 12px auto 0;
+}
+.coordinate-diagram > figcaption {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+}
+.diagram-grid path {
+  fill: none;
+  stroke: var(--line);
+  stroke-dasharray: 5 5;
+}
+.diagram-axis path {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.diagram-axis-label text {
+  fill: var(--muted);
+  font-size: 17px;
+}
+.diagram-point.class-0 {
+  fill: var(--surface);
+  stroke: var(--orange);
+  stroke-width: 3;
+}
+.diagram-point.class-1 {
+  fill: var(--accent);
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.diagram-legend {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.diagram-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.legend-point {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+.legend-point.class-0 {
+  border: 2px solid var(--orange);
+}
+.legend-point.class-1 {
+  background: var(--accent);
+}
+.prose .flow-diagram ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.flow-diagram li {
+  margin: 0;
+  text-align: center;
+}
+.diagram-step {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.diagram-arrow {
+  display: block;
+  padding: 3px 0;
+  color: var(--accent);
+  font-size: 22px;
+  line-height: 1.5;
+}
+.flow-diagram figcaption {
+  margin-top: 20px;
+}
 .hljs-keyword,
 .hljs-selector-tag {
   color: #d5acdf;

@@ -6,6 +6,8 @@ import rehypeHighlight from "rehype-highlight";
 import { CodeBlock } from "./interactive";
 import { WeekPlayground } from "./playgrounds";
 import { visualizationOptions } from "@/lib/visualizations";
+import { parseTextDiagram } from "@/lib/text-diagrams";
+import { LessonDiagram } from "./lesson-diagram";
 export function WhyBox({ children }: { children: React.ReactNode }) {
   return (
     <aside className="why">
@@ -81,7 +83,26 @@ export function LessonMarkdown({ text }: { text: string }) {
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex, rehypeHighlight]}
         components={{
-          pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
+          pre: ({ node, children }) => {
+            const code = node?.children.find(
+              (child) => child.type === "element" && child.tagName === "code",
+            );
+            if (code?.type === "element") {
+              const classes = code.properties.className;
+              if (
+                Array.isArray(classes) &&
+                classes.includes("language-text") &&
+                code.children.every((child) => child.type === "text")
+              ) {
+                const source = code.children
+                  .map((child) => (child.type === "text" ? child.value : ""))
+                  .join("");
+                const diagram = parseTextDiagram(source, "text");
+                if (diagram) return <LessonDiagram diagram={diagram} />;
+              }
+            }
+            return <CodeBlock>{children}</CodeBlock>;
+          },
           blockquote: ({ children }) => (
             <blockquote className="key-idea">{children}</blockquote>
           ),
