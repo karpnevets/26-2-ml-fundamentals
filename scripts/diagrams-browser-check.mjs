@@ -9,9 +9,20 @@ const lesson = fs.readFileSync("content/week-3-feature-space.md", "utf8");
 const xor = [...lesson.matchAll(/```text\r?\n([\s\S]*?)```/g)].find((m) =>
   m[1].includes("● class 1"),
 )[1];
+const students = [...lesson.matchAll(/```text\r?\n([\s\S]*?)```/g)].find((m) =>
+  m[1].includes("• student B"),
+)[1];
+const pointGrid =
+  "  × × × × ×\n×     ○     ×\n×   ○ ○ ○   ×\n×     ○     ×\n  × × × × ×";
 const source = [
   "## XOR",
   "```text\n" + xor + "```",
+  "## Feature Space",
+  "```text\n" + students + "```",
+  "## 점 배치",
+  "```text\n" + pointGrid + "\n```",
+  "## 언어 없는 도식",
+  "```\n" + students + "```",
   "## 계산 흐름",
   "```text\nInput\n ↓\nModel\n ↓\nLoss\n\n추가 설명\n```",
   "## 코드",
@@ -48,7 +59,17 @@ try {
     `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>${css}</style></head><body><main style="max-width:800px;margin:24px auto;padding:0 20px"><div id="root"></div></main></body></html>`,
   );
   await page.addScriptTag({ content: bundle.outputFiles[0].text });
-  await expect(page.locator(".coordinate-diagram")).toHaveCount(2);
+  await expect(page.locator(".coordinate-diagram")).toHaveCount(5);
+  await expect(page.locator(".scatter-diagram")).toHaveCount(2);
+  await expect(
+    page.locator(".scatter-diagram").first().locator(".diagram-point-label"),
+  ).toHaveText(["student B", "student A"]);
+  await expect(
+    page.locator(".point-cloud-diagram circle.point-hollow"),
+  ).toHaveCount(5);
+  await expect(
+    page.locator(".point-cloud-diagram path.point-cross"),
+  ).toHaveCount(16);
   await expect(page.locator(".coordinate-diagram").first()).toBeVisible();
   await expect(
     page.locator(".coordinate-diagram").first().locator("circle.class-0"),
@@ -81,6 +102,13 @@ try {
   await page
     .locator(".flow-diagram")
     .screenshot({ path: "qa/flow-diagram-desktop.png" });
+  await page
+    .locator(".scatter-diagram")
+    .first()
+    .screenshot({ path: "qa/students-diagram-desktop.png" });
+  await page
+    .locator(".point-cloud-diagram")
+    .screenshot({ path: "qa/point-cloud-desktop.png" });
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     assert(
@@ -89,11 +117,34 @@ try {
       ),
     );
     await expect(page.locator(".coordinate-diagram").first()).toBeVisible();
+    const labels = await page
+      .locator(".scatter-diagram")
+      .first()
+      .locator(".diagram-point-label")
+      .evaluateAll((els) =>
+        els.map((el) => {
+          const text = el.getBBox(),
+            svg = el.closest("svg").viewBox.baseVal;
+          return (
+            text.x >= svg.x &&
+            text.x + text.width <= svg.x + svg.width &&
+            text.y >= svg.y
+          );
+        }),
+      );
+    assert(labels.every(Boolean));
   }
   await page
     .locator(".coordinate-diagram")
     .first()
     .screenshot({ path: "qa/xor-diagram-mobile.png" });
+  await page
+    .locator(".scatter-diagram")
+    .first()
+    .screenshot({ path: "qa/students-diagram-mobile.png" });
+  await page
+    .locator(".point-cloud-diagram")
+    .screenshot({ path: "qa/point-cloud-mobile.png" });
   assert.deepEqual(errors, []);
   console.log(
     "Diagram rendering, disclosure, code fallback and mobile checks passed.",

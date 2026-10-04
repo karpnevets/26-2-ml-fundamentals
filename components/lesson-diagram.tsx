@@ -1,6 +1,113 @@
-import type { TextDiagram } from "@/lib/text-diagrams";
+import type { DiagramPoint, TextDiagram } from "@/lib/text-diagrams";
 
 type ClassPoint = { x: number; y: number; label: string };
+
+function PointSymbol({
+  point,
+  x,
+  y,
+}: {
+  point: DiagramPoint;
+  x: number;
+  y: number;
+}) {
+  const title = point.label || point.symbol;
+  return point.symbol === "×" ? (
+    <path
+      className="diagram-point point-cross"
+      d={`M${x - 6} ${y - 6}l12 12m-12 0l12-12`}
+    >
+      <title>{title}</title>
+    </path>
+  ) : (
+    <circle
+      className={`diagram-point ${point.symbol === "○" ? "point-hollow" : "point-filled"}`}
+      cx={x}
+      cy={y}
+      r="7"
+    >
+      <title>{title}</title>
+    </circle>
+  );
+}
+
+function PointDiagram({
+  diagram,
+}: {
+  diagram: Extract<TextDiagram, { kind: "scatter" | "point-cloud" }>;
+}) {
+  const axes = diagram.kind === "scatter";
+  const symbols = [...new Set(diagram.points.map((point) => point.symbol))];
+  return (
+    <figure
+      className={`lesson-diagram coordinate-diagram ${axes ? "scatter-diagram" : "point-cloud-diagram"}`}
+    >
+      <svg
+        viewBox="0 0 640 360"
+        role="img"
+        aria-label={
+          axes
+            ? `${diagram.xLabel}·${diagram.yLabel} 좌표 도식. ${diagram.points.map((p) => p.label || p.symbol).join(", ")}. 점의 위치는 원본의 상대적 배치를 나타냅니다.`
+            : "점 배치 도식. 점의 종류와 상대적 배치는 원본과 같습니다."
+        }
+      >
+        {axes && (
+          <>
+            <g className="diagram-axis">
+              <path d="M58 290H588M78 310V38" />
+              <path d="m581 285 7 5-7 5M73 45l5-7 5 7" />
+            </g>
+            <g className="diagram-axis-label">
+              <text x="600" y="331" textAnchor="end">
+                {diagram.xLabel}
+              </text>
+              <text x="78" y="25">
+                {diagram.yLabel}
+              </text>
+            </g>
+          </>
+        )}
+        {diagram.points.map((point, i) => {
+          const x = (axes ? 78 : 90) + point.x * (axes ? 470 : 460);
+          const y = (axes ? 290 : 300) - point.y * (axes ? 244 : 240);
+          const end = point.x > 0.6;
+          const labelLines = point.label?.match(/.{1,22}/gu) ?? [];
+          return (
+            <g key={i}>
+              <PointSymbol point={point} x={x} y={y} />
+              {point.label && (
+                <text
+                  className="diagram-point-label"
+                  x={x + (end ? -14 : 14)}
+                  y={y - 13 - (labelLines.length - 1) * 19}
+                  textAnchor={end ? "end" : "start"}
+                >
+                  {labelLines.map((line, j) => (
+                    <tspan key={j} x={x + (end ? -14 : 14)} dy={j ? 19 : 0}>
+                      {line}
+                    </tspan>
+                  ))}
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+      {!axes && (
+        <div className="diagram-legend">
+          {symbols.map((symbol) => (
+            <span
+              key={symbol}
+              className={`diagram-symbol symbol-${symbol === "×" ? "cross" : symbol === "○" ? "hollow" : "filled"}`}
+            >
+              {symbol}
+            </span>
+          ))}
+        </div>
+      )}
+    </figure>
+  );
+}
 
 function CoordinateDiagram({
   title,
@@ -67,6 +174,8 @@ function CoordinateDiagram({
 }
 
 export function LessonDiagram({ diagram }: { diagram: TextDiagram }) {
+  if (diagram.kind === "scatter" || diagram.kind === "point-cloud")
+    return <PointDiagram diagram={diagram} />;
   if (diagram.kind === "xor")
     return (
       <CoordinateDiagram

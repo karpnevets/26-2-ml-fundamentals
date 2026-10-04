@@ -89,15 +89,21 @@ export function LessonMarkdown({ text }: { text: string }) {
             );
             if (code?.type === "element") {
               const classes = code.properties.className;
+              const language = Array.isArray(classes)
+                ? String(
+                    classes.find((value) =>
+                      String(value).startsWith("language-"),
+                    ) ?? "",
+                  ).replace(/^language-/, "")
+                : "";
               if (
-                Array.isArray(classes) &&
-                classes.includes("language-text") &&
+                ["", "text", "plain", "plaintext"].includes(language) &&
                 code.children.every((child) => child.type === "text")
               ) {
                 const source = code.children
                   .map((child) => (child.type === "text" ? child.value : ""))
                   .join("");
-                const diagram = parseTextDiagram(source, "text");
+                const diagram = parseTextDiagram(source, language);
                 if (diagram) return <LessonDiagram diagram={diagram} />;
               }
             }

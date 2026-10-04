@@ -12,11 +12,51 @@ test("recognizes the existing XOR text without changing its source", () => {
   assert.deepEqual(parseTextDiagram(block.replace(/\n/g, "\r\n"), "text"), {
     kind: "xor",
   });
-  assert.equal(
-    parseTextDiagram(block.replace("● class 1", "● class 0"), "text"),
-    null,
+  const changed = parseTextDiagram(
+    block.replace("● class 1", "● class 0"),
+    "text",
   );
+  assert.equal(changed?.kind, "scatter");
+  if (changed?.kind === "scatter")
+    assert.equal(changed.points[0].label, "class 0");
   assert.equal(parseTextDiagram(block, "python"), null);
+});
+
+test("coordinate diagrams recognize labels and preserve relative point placement", () => {
+  const source = readFileSync("content/week-3-feature-space.md", "utf8");
+  const block = [...source.matchAll(/```text\r?\n([\s\S]*?)```/g)].find((m) =>
+    m[1].includes("• student B"),
+  )![1];
+  for (const language of ["text", "", "plain", "plaintext"]) {
+    const diagram = parseTextDiagram(block, language);
+    assert.equal(diagram?.kind, "scatter");
+    if (diagram?.kind !== "scatter") throw new Error("Missing scatter diagram");
+    assert.equal(diagram.xLabel, "x₁");
+    assert.equal(diagram.yLabel, "x₂");
+    assert.deepEqual(
+      diagram.points.map((p) => p.label),
+      ["student B", "student A"],
+    );
+    assert(diagram.points[0].x > diagram.points[1].x);
+    assert(diagram.points[0].y > diagram.points[1].y);
+  }
+  assert.equal(parseTextDiagram(block, "python"), null);
+});
+
+test("point grids preserve all symbols and their relative positions", () => {
+  const block =
+    "  × × × × ×\n×     ○     ×\n×   ○ ○ ○   ×\n×     ○     ×\n  × × × × ×";
+  const diagram = parseTextDiagram(block, "text");
+  assert.equal(diagram?.kind, "point-cloud");
+  if (diagram?.kind !== "point-cloud") throw new Error("Missing point grid");
+  assert.equal(diagram.points.filter((p) => p.symbol === "×").length, 16);
+  assert.equal(diagram.points.filter((p) => p.symbol === "○").length, 5);
+  const center = diagram.points.find(
+    (p) => p.symbol === "○" && p.x === 0.5 && p.y === 0.5,
+  );
+  assert(center);
+  assert.equal(parseTextDiagram(block + "\nnot a point", "text"), null);
+  assert.equal(parseTextDiagram("○ × ○", "text"), null);
 });
 
 test("keeps flow labels, repeated steps and trailing explanations", () => {

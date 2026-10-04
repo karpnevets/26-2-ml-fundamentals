@@ -708,6 +708,36 @@ footer {
   stroke: var(--accent);
   stroke-width: 3;
 }
+.diagram-point.point-filled {
+  fill: var(--accent);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.diagram-point.point-hollow {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.diagram-point.point-cross {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.diagram-point-label {
+  fill: var(--text);
+  font-size: 17px;
+}
+.diagram-symbol {
+  font-size: 22px;
+}
+.diagram-symbol.symbol-cross {
+  color: var(--orange);
+}
+.diagram-symbol.symbol-hollow,
+.diagram-symbol.symbol-filled {
+  color: var(--accent);
+}
 .diagram-legend {
   display: flex;
   justify-content: center;
