@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   },
   description:
     "모델과 Loss에서 ResNet까지. 비전공자를 위한 8주 머신러닝 학습 노트.",
+  icons: {
+    icon: { url: "/favicon.png", type: "image/png", sizes: "48x48" },
+  },
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
