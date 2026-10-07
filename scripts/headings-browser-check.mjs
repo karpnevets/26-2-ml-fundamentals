@@ -7,14 +7,20 @@ const require = createRequire(import.meta.url);
 const { build } = createRequire(require.resolve("tsx/package.json"))("esbuild");
 const body = [
   String.raw`### 2.4 차원과 $\mathbb{R}^d$`,
-  "본문 내용.",
+  "이처럼 **회귀(regression)**라고 부릅니다. **분류(classification)**를 다룹니다.",
+  "앞**(괄호로 시작)**뒤와 *기울임(설명)*입니다.",
+  "**[벡터(vector)](https://example.com)**라고 합니다.",
+  String.raw`**변환 $\phi(x)$**입니다. **특성（feature）**를 씁니다.`,
+  "`**코드(code)**입니다`와 \\*\\*이스케이프(escape)\\*\\*입니다.",
+  "```python\nprint('**코드(code)**입니다')\n```",
+  "<details>\n<summary>**보충(설명)**입니다: $x$와 \\(w\\)</summary>\n\n**차원(dimension)**이라고 합니다.\n\n</details>",
   String.raw`### 2.8 전치 기호 $\top$`,
   "본문 내용.",
   "### 2.20 데이터 행렬 $X$",
   "본문 내용.",
   String.raw`### 2.30 점수 \(w^\top x+b\)`,
   "본문 내용.",
-  "### 2.31 **가중치**와 `bias`",
+  "### 2.31 **가중치(weight)**와 `bias`",
   "본문 내용.",
   "### 2.32 두 가중치 $w_1*w_2$",
   "본문 내용.",
@@ -114,7 +120,33 @@ try {
   await expect(page.locator(".katex-error")).toHaveCount(0);
   await expect(page.locator(".lesson-section > h2 p, .toc a p")).toHaveCount(0);
   await expect(page.locator(".lesson-section > h2 strong")).toHaveText(
-    "가중치",
+    "가중치(weight)",
+  );
+  await expect(page.locator(".toc strong")).toHaveText("가중치(weight)");
+  await expect(page.locator("#section-1 .prose strong")).toHaveText([
+    "회귀(regression)",
+    "분류(classification)",
+    "(괄호로 시작)",
+    "벡터(vector)",
+    /^변환 /,
+    "특성（feature）",
+    "차원(dimension)",
+  ]);
+  await expect(page.locator("#section-1 .prose em")).toHaveText("기울임(설명)");
+  await expect(page.locator("#section-1 summary strong")).toHaveText(
+    "보충(설명)",
+  );
+  await expect(page.locator("#section-1 summary .katex")).toHaveCount(2);
+  await expect(page.locator("#section-1 strong .katex")).toHaveCount(1);
+  await expect(page.locator("#section-1 .prose code").first()).toHaveText(
+    "**코드(code)**입니다",
+  );
+  await expect(page.locator("#section-1 pre")).toContainText(
+    "**코드(code)**입니다",
+  );
+  await expect(page.locator("#section-1 code strong")).toHaveCount(0);
+  await expect(page.locator("#section-1 .prose").first()).toContainText(
+    "**이스케이프(escape)**입니다",
   );
   await expect(page.locator(".toc code")).toHaveText("bias");
   await expect(page.locator(".lesson-section > h2").last()).toHaveText(
@@ -150,7 +182,7 @@ try {
   await page.screenshot({ path: "qa/heading-math-mobile.png", fullPage: true });
   assert.deepEqual(errors, []);
   console.log(
-    "PASS actual lesson page: math in section headings and TOC, both delimiters, formatting, anchors, desktop/mobile layout",
+    "PASS actual lesson page: heading math, Korean emphasis with parentheses in body/headings/TOC/disclosures, literal code and escapes, anchors, desktop/mobile layout",
   );
 } finally {
   await browser.close();

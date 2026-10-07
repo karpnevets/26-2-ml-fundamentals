@@ -1,6 +1,7 @@
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import remarkCjkFriendly from "remark-cjk-friendly/parseOnly";
 import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
 import { CodeBlock } from "./interactive";
@@ -8,6 +9,7 @@ import { WeekPlayground } from "./playgrounds";
 import { visualizationOptions } from "@/lib/visualizations";
 import { parseTextDiagram } from "@/lib/text-diagrams";
 import { LessonDiagram } from "./lesson-diagram";
+import { InlineMarkdown } from "./inline-markdown";
 export function WhyBox({ children }: { children: React.ReactNode }) {
   return (
     <aside className="why">
@@ -43,13 +45,7 @@ export function LessonMarkdown({ text }: { text: string }) {
         <LessonMarkdown text={lines.slice(0, start).join("\n")} />
         <details className="math-details">
           <summary>
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-              components={{ p: ({ children }) => <span>{children}</span> }}
-            >
-              {summary[1].replace(/\\\(/g, "$ ").replace(/\\\)/g, " $")}
-            </Markdown>
+            <InlineMarkdown text={summary[1]} />
           </summary>
           <LessonMarkdown text={lines.slice(start + 2, end).join("\n")} />
         </details>
@@ -80,7 +76,7 @@ export function LessonMarkdown({ text }: { text: string }) {
   return (
     <div className="prose">
       <Markdown
-        remarkPlugins={[remarkGfm, remarkMath]}
+        remarkPlugins={[remarkGfm, remarkMath, remarkCjkFriendly]}
         rehypePlugins={[rehypeKatex, rehypeHighlight]}
         components={{
           pre: ({ node, children }) => {
