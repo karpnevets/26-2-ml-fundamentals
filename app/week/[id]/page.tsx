@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { lessons, sections } from "@/lib/content";
 import { LessonMarkdown, WhyBox } from "@/components/markdown";
+import { InlineMarkdown } from "@/components/inline-markdown";
 import { TermChip } from "@/components/interactive";
 import { ProgressCheck, WeekStatus } from "@/components/progress";
 import { conceptEntries } from "@/lib/concepts";
@@ -107,7 +108,10 @@ export default async function Week({
         <TableOfContents
           sections={parts
             .filter((s) => s.title)
-            .map(({ id, title }) => ({ id, title }))}
+            .map(({ id, title }) => ({
+              id,
+              title: <InlineMarkdown text={title} />,
+            }))}
         />
         <article className="lesson-content">
           <section id="why">
@@ -161,7 +165,11 @@ export default async function Week({
               key={s.id}
             >
               {s.title && (
-                <h2>{s.title === "선택 과제" ? "연습문제" : s.title}</h2>
+                <h2>
+                  <InlineMarkdown
+                    text={s.title === "선택 과제" ? "연습문제" : s.title}
+                  />
+                </h2>
               )}
               {s.title.includes("선택 과제") ? (
                 <Assignments body={s.body} week={w.week} />

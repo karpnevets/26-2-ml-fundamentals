@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 export function TableOfContents({
   sections,
 }: {
-  sections: { id: string; title: string }[];
+  sections: { id: string; title: ReactNode }[];
 }) {
   const [open, O] = useState(true);
   useEffect(() => {
@@ -18,7 +19,7 @@ export function TableOfContents({
           <a href="#experiment">직접 움직여 보기</a>
           {sections.map((s) => (
             <a href={`#${s.id}`} key={s.id}>
-              {s.title.replace(/\*|`/g, "")}
+              {s.title}
             </a>
           ))}
           <a href="#progress">이해한 개념 체크</a>
