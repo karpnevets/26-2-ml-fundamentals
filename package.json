@@ -16,7 +16,8 @@
     "check:auth-browser": "node scripts/auth-browser-check.mjs",
     "check:admin-browser": "node scripts/admin-browser-check.mjs",
     "check:course-browser": "node scripts/course-browser-check.mjs",
-    "check:diagrams-browser": "node scripts/diagrams-browser-check.mjs"
+    "check:diagrams-browser": "node scripts/diagrams-browser-check.mjs",
+    "check:concepts-browser": "node scripts/concepts-browser-check.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",

@@ -7,6 +7,12 @@ import { lessons } from "./content";
 import { readCourseLessons } from "./course-repository";
 import { readProgress } from "./progress-repository";
 import { completedWeeks } from "./completion";
+import { readConceptLessons } from "./concept-repository";
+export const courseCatalog = cache(() =>
+  process.env.DATABASE_URL
+    ? readConceptLessons(query, lessons())
+    : Promise.resolve(lessons()),
+);
 export const courseAccess = cache(async () => {
   const user = await currentActor();
   if (!user) return { user: null, weeks: [0, 1], completed: [] as number[] };
@@ -21,12 +27,13 @@ export const courseAccess = cache(async () => {
     [user.id],
   );
   const weeks = accessibleWeeks(rows.map((r) => Number(r.week)));
-  const completed = completedWeeks(await readProgress(query, user.id)).filter(
-    (w) => weeks.includes(w),
-  );
+  const completed = completedWeeks(
+    await readProgress(query, user.id),
+    await courseCatalog(),
+  ).filter((w) => weeks.includes(w));
   return { user, weeks, completed };
 });
 export async function editedLessons() {
   const { weeks } = await courseAccess();
-  return readCourseLessons(query, lessons(), weeks);
+  return readCourseLessons(query, await courseCatalog(), weeks);
 }

@@ -3,6 +3,8 @@ import { accessibleWeeks } from "./course-policy";
 import { matchesPassword } from "./quiz-password";
 import { readProgress } from "./progress-repository";
 import { completedWeeks } from "./completion";
+import { lessons } from "./content";
+import { readConceptLessons } from "./concept-repository";
 export async function unlockWeek(
   query: Query,
   userId: string,
@@ -23,7 +25,10 @@ export async function unlockWeek(
   if (weeks.includes(week)) return { ok: true, status: 200 };
   if (
     !admin &&
-    !completedWeeks(await readProgress(query, userId)).includes(week - 1)
+    !completedWeeks(
+      await readProgress(query, userId),
+      await readConceptLessons(query, lessons()),
+    ).includes(week - 1)
   )
     return {
       error: "직전 주차의 개념 체크를 모두 완료한 뒤 암호를 입력해 주세요.",

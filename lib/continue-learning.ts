@@ -1,11 +1,12 @@
+import { conceptEntries, type ConceptWeek } from "./concepts";
 export function nextLearning(
-  weeks: { week: number; concepts: string[] }[],
+  weeks: ConceptWeek[],
   values: Record<string, boolean>,
 ) {
   for (let week = 1; week <= 8; week++) {
     const lesson = weeks.find((w) => w.week === week);
     if (!lesson) return { href: `/week/${week}`, label: `${week}주차 열기` };
-    const done = lesson.concepts.filter((c) => values[`w${week}:${c}`]).length;
+    const done = conceptEntries(lesson).filter((c) => values[c.id]).length;
     if (done < lesson.concepts.length)
       return {
         href: `/week/${week}`,

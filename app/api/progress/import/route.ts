@@ -6,7 +6,7 @@ import { validImport } from "@/lib/progress-policy";
 import { importProgress, readProgress } from "@/lib/progress-repository";
 import { query } from "@/lib/query";
 import { json, smallJson } from "@/lib/http";
-import { courseAccess } from "@/lib/course";
+import { courseAccess, courseCatalog } from "@/lib/course";
 export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
   if (!sameOrigin(request, process.env.AUTH_URL))
@@ -21,22 +21,19 @@ export async function POST(request: Request) {
       );
     const limited = await requestLimit(user.id, "import");
     if (limited) return limited;
+    const items = learningItems(await courseCatalog());
     let ids;
     try {
       ids = validImport(
         await smallJson(request),
-        new Set(learningItems().map((i) => i.id)),
+        new Set(items.map((i) => i.id)),
       );
     } catch {
       return json({ error: "잘못된 요청입니다." }, 400);
     }
     if (!ids) return json({ error: "잘못된 학습 기록입니다." }, 400);
     const { weeks } = await courseAccess();
-    if (
-      ids.some(
-        (id) => !weeks.includes(learningItems().find((i) => i.id === id)!.week),
-      )
-    )
+    if (ids.some((id) => !weeks.includes(items.find((i) => i.id === id)!.week)))
       return json(
         {
           error:

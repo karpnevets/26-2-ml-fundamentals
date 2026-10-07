@@ -2,7 +2,8 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { currentActor } from "@/lib/auth/actor";
 import { originalLesson } from "@/lib/course-documents";
-import { lessons } from "@/lib/content";
+import { courseCatalog } from "@/lib/course";
+import { conceptEntries } from "@/lib/concepts";
 import { query } from "@/lib/query";
 import { quizTemplate } from "@/lib/quiz-templates";
 import { CourseEditor } from "@/components/course-editor";
@@ -27,7 +28,7 @@ export default async function Page({
         <h1>관리자만 접근할 수 있습니다.</h1>
       </div>
     );
-  const lesson = lessons().find((w) => String(w.week) === id);
+  const lesson = (await courseCatalog()).find((w) => String(w.week) === id);
   if (!lesson) notFound();
   const original = await originalLesson(lesson.week);
   const [edit] = await query(
@@ -62,6 +63,8 @@ export default async function Page({
         bodyRevision={Number(edit?.revision ?? 0)}
         initialQuiz={initialQuiz}
         hasPassword={Boolean(quiz?.has_password)}
+        initialConcepts={conceptEntries(lesson)}
+        conceptRevision={lesson.conceptRevision ?? 0}
       />
     </div>
   );

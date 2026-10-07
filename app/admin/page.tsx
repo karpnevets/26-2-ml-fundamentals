@@ -7,6 +7,7 @@ import { learningItems } from "@/lib/learning-items";
 import { dashboardRows } from "@/lib/progress-repository";
 import { summarizeLearners } from "@/lib/admin-summary";
 import { AdminDashboard } from "@/components/admin-dashboard";
+import { courseCatalog } from "@/lib/course";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "학습 진행 현황",
@@ -43,7 +44,7 @@ export default async function Page() {
   try {
     const learners = summarizeLearners(
       await dashboardRows(query),
-      learningItems(),
+      learningItems(await courseCatalog()),
     );
     return (
       <div className="page admin-page">

@@ -4,6 +4,8 @@ import { LessonMarkdown } from "./markdown";
 import { visualizationOptions } from "@/lib/visualizations";
 import type { QuizQuestion } from "@/lib/course-policy";
 import { defaultColabUrl } from "@/lib/colab";
+import { ConceptEditor } from "./concept-editor";
+import type { Concept } from "@/lib/concepts";
 type Quiz = {
   questions: QuizQuestion[];
   instructions: string;
@@ -18,6 +20,8 @@ export function CourseEditor({
   bodyRevision,
   initialQuiz,
   hasPassword,
+  initialConcepts = [],
+  conceptRevision = 0,
 }: {
   week: number;
   original: string;
@@ -26,8 +30,10 @@ export function CourseEditor({
   bodyRevision: number;
   initialQuiz: Quiz;
   hasPassword: boolean;
+  initialConcepts?: Concept[];
+  conceptRevision?: number;
 }) {
-  const [tab, setTab] = useState<"lesson" | "quiz">(
+  const [tab, setTab] = useState<"lesson" | "quiz" | "concepts">(
     week >= 2 ? "quiz" : "lesson",
   );
   const [body, setBody] = useState(initialBody),
@@ -42,8 +48,9 @@ export function CourseEditor({
     [message, setMessage] = useState(""),
     [dirtyLesson, setDirtyLesson] = useState(false),
     [dirtyQuiz, setDirtyQuiz] = useState(false),
+    [dirtyConcepts, setDirtyConcepts] = useState(false),
     [preview, setPreview] = useState(false);
-  const dirty = dirtyLesson || dirtyQuiz;
+  const dirty = dirtyLesson || dirtyQuiz || dirtyConcepts;
   function setDirty(value: boolean) {
     if (tab === "lesson") setDirtyLesson(value);
     else setDirtyQuiz(value);
@@ -128,10 +135,25 @@ export function CourseEditor({
             잠금 해제 퀴즈
           </button>
         )}
+        <button
+          aria-pressed={tab === "concepts"}
+          onClick={() => setTab("concepts")}
+        >
+          개념 체크 목록
+        </button>
       </div>
       <p role="status" className="editor-message">
         {message || (dirty ? "저장하지 않은 변경사항이 있습니다." : "")}
       </p>
+      <div hidden={tab !== "concepts"}>
+        <ConceptEditor
+          week={week}
+          initial={initialConcepts}
+          initialRevision={conceptRevision}
+          onDirty={setDirtyConcepts}
+          onBusy={setBusy}
+        />
+      </div>
       {tab === "lesson" ? (
         <>
           <label className="editor-field">
@@ -160,8 +182,8 @@ export function CourseEditor({
             기본 노트북 연결
           </button>
           <p>
-            Markdown 본문을 편집합니다. 제목·개념 체크 항목은 기존 값을
-            유지합니다. 수식, 이미지 링크, 코드 블록과 아래 실험 삽입을
+            Markdown 본문을 편집합니다. 개념 체크 항목은 ‘개념 체크 목록’ 탭에서
+            수정합니다. 수식, 이미지 링크, 코드 블록과 아래 실험 삽입을
             지원합니다.
           </p>
           <div className="editor-toolbar">
@@ -230,7 +252,7 @@ export function CourseEditor({
             </section>
           )}
         </>
-      ) : (
+      ) : tab === "quiz" ? (
         <>
           <p>
             직전 {week - 1}주차 복습 문제입니다. 정답은 관리자에게만 보입니다.
@@ -405,7 +427,7 @@ export function CourseEditor({
             </section>
           )}
         </>
-      )}
+      ) : null}
     </fieldset>
   );
 }

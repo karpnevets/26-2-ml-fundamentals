@@ -16,6 +16,7 @@ import {
   type ProgressValues,
 } from "@/lib/progress-policy";
 import { nextLearning } from "@/lib/continue-learning";
+import { conceptEntries, type ConceptWeek } from "@/lib/concepts";
 type User = { id: string; email: string; name: string; isAdmin: boolean };
 type Mode = "loading" | "local" | "guest" | "account" | "unavailable" | "error";
 type State = {
@@ -54,6 +55,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     [localCount, setLocalCount] = useState(0);
   const lock = useRef(false),
     generation = useRef(0);
+  const activeIds = useRef<Set<string> | null>(null);
   function readLocal() {
     try {
       if (localStorage.getItem(LOCAL_KEY) === null) {
@@ -75,6 +77,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     const ticket = ++generation.current;
     setMode("loading");
     setUser(null);
+    activeIds.current = null;
     setValues({});
     setMessage("");
     try {
@@ -88,10 +91,18 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         const body = await progress.json();
         if (ticket !== generation.current) return;
         if (body.ownerId !== data.user.id) throw new Error();
+        activeIds.current = Array.isArray(body.itemIds)
+          ? new Set(body.itemIds)
+          : null;
         setValues(localProgress(body.values));
         setUser(data.user);
         setMode("account");
-        setLocalCount(Object.values(readLocal()).filter(Boolean).length);
+        setLocalCount(
+          Object.entries(readLocal()).filter(
+            ([id, done]) =>
+              done && (!activeIds.current || activeIds.current.has(id)),
+          ).length,
+        );
       } else if (data.mode === "local" || data.mode === "guest") {
         setValues(readLocal());
         setMode(data.mode);
@@ -173,7 +184,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     setMessage("");
     try {
       const ids = Object.entries(readLocal())
-        .filter(([, v]) => v)
+        .filter(
+          ([id, v]) => v && (!activeIds.current || activeIds.current.has(id)),
+        )
         .map(([id]) => id);
       const response = await fetch("/api/progress/import", {
         method: "POST",
@@ -310,15 +323,11 @@ export function ProgressCheck({ id, label }: { id: string; label: string }) {
     </label>
   );
 }
-export function WeekStatus({
-  week,
-  concepts,
-}: {
-  week: number;
-  concepts: string[];
-}) {
+export function WeekStatus({ week, concepts, conceptIds }: ConceptWeek) {
   const { values } = useContext(Context);
-  const n = concepts.filter((c) => values[`w${week}:${c}`]).length;
+  const n = conceptEntries({ week, concepts, conceptIds }).filter(
+    (c) => values[c.id],
+  ).length;
   return (
     <span className={n === concepts.length ? "status done" : "status"}>
       {n === concepts.length
@@ -329,11 +338,7 @@ export function WeekStatus({
     </span>
   );
 }
-export function ContinueLearning({
-  weeks,
-}: {
-  weeks: { week: number; concepts: string[] }[];
-}) {
+export function ContinueLearning({ weeks }: { weeks: ConceptWeek[] }) {
   const { values, ready, retry, mode } = useContext(Context);
   if (!ready)
     return (
@@ -349,14 +354,13 @@ export function ContinueLearning({
     </Link>
   );
 }
-export function OverallProgress({
-  weeks,
-}: {
-  weeks: { week: number; concepts: string[] }[];
-}) {
+export function OverallProgress({ weeks }: { weeks: ConceptWeek[] }) {
   const { values } = useContext(Context);
   const n = weeks.filter(
-    (w) => w.week > 0 && w.concepts.every((c) => values[`w${w.week}:${c}`]),
+    (w) =>
+      w.week > 0 &&
+      w.concepts.length > 0 &&
+      conceptEntries(w).every((c) => values[c.id]),
   ).length;
   return (
     <div className="overall">

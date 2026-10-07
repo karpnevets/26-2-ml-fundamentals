@@ -7,6 +7,7 @@ import { lessons, sections } from "@/lib/content";
 import { LessonMarkdown, WhyBox } from "@/components/markdown";
 import { TermChip } from "@/components/interactive";
 import { ProgressCheck, WeekStatus } from "@/components/progress";
+import { conceptEntries } from "@/lib/concepts";
 import { WeekPlayground } from "@/components/playgrounds";
 import { ResNetRecap } from "@/components/resnet-recap";
 import { courseAccess, editedLessons } from "@/lib/course";
@@ -72,7 +73,11 @@ export default async function Week({
         <p className="main-question">{w.question}</p>
         <div className="lesson-meta">
           <span>{w.estimated_time}</span>
-          <WeekStatus week={w.week} concepts={w.concepts} />
+          <WeekStatus
+            week={w.week}
+            concepts={w.concepts}
+            conceptIds={w.conceptIds}
+          />
         </div>
       </header>
       {w.colabUrl && (
@@ -180,8 +185,8 @@ export default async function Week({
               주차 완료 조건이 아닙니다.
             </p>
             <div className="checks">
-              {w.concepts.map((c) => (
-                <ProgressCheck id={`w${w.week}:${c}`} label={c} key={c} />
+              {conceptEntries(w).map((c) => (
+                <ProgressCheck id={c.id} label={c.label} key={c.id} />
               ))}
             </div>
           </section>

@@ -55,7 +55,7 @@ qa/                     # 브라우저 검증 스크린샷
 
 ## 콘텐츠 저장
 
-강의 원본·관리자 수정본·퀴즈 Markdown과 정답은 DB에 보관합니다. 저장소에 본문 파일을 포함하거나 런타임에서 파일을 대체 원고로 읽지 않습니다. 용어 정의와 최종 프로젝트도 DB에서 읽습니다. 커리큘럼 제목·개념 체크 항목은 `lib/course-catalog.json`에 남겨 둡니다.
+강의 원본·관리자 수정본·퀴즈 Markdown과 정답은 DB에 보관합니다. 저장소에 본문 파일을 포함하거나 런타임에서 파일을 대체 원고로 읽지 않습니다. 용어 정의와 최종 프로젝트도 DB에서 읽습니다. 커리큘럼 제목·기본 개념 체크 목록은 `lib/course-catalog.json`에 남겨 두며, 관리자가 편집한 개념 목록은 DB에서 읽습니다. 개념 이름·순서를 바꿔도 기존 체크 기록은 유지됩니다.
 
 이번 최초 이관에는 로컬의 `.private-course/import-content.sql` 전체를 Neon SQL Editor에서 실행해야 합니다. 공개 `db/setup.sql`만으로는 본문이 등록되지 않습니다. [DB 자료 이관 안내](docs/PRIVATE-CONTENT.md)를 확인하세요.
 
@@ -67,7 +67,7 @@ qa/                     # 브라우저 검증 스크린샷
 
 주차별 실행 가능한 노트북은 `notebooks/week-0.ipynb`–`week-8.ipynb`입니다. 열린 강의에서 **Colab에서 실습하기**로 접근합니다. 관리자 본문 탭에서 링크를 변경/숨기려면 `db/migrations/003_colab_links.sql`을 한 번 적용하세요. 이번 개정에서는 최신 `db/setup.sql` 전체를 적용하세요. [노트북 사용법](notebooks/README.md)
 
-2–8주차는 계정별 퀴즈 암호로 순차 해제합니다. 관리자 `/admin/course`에서 회차별 퀴즈와 Markdown 본문을 편집하고 인터랙티브 실험을 삽입할 수 있습니다. 기존 DB에는 `db/migrations/002_course_editor.sql`을 적용하세요. [퀴즈·편집 사용법](docs/COURSE-EDITOR.md)을 확인하세요.
+2–8주차는 계정별 퀴즈 암호로 순차 해제합니다. 관리자 `/admin/course`에서 회차별 퀴즈, Markdown 본문, 개념 체크 목록을 편집하고 인터랙티브 실험을 삽입할 수 있습니다. 개념 체크 목록은 이름 수정·추가·삭제·순서 변경을 지원하며 본문과 별도로 저장합니다. 기존 DB에는 `db/migrations/002_course_editor.sql`을 적용하세요. 개념 편집은 기존 `course_documents`와 `learning_items`를 사용하므로 추가 migration이 필요 없습니다. [퀴즈·편집 사용법](docs/COURSE-EDITOR.md)을 확인하세요.
 
 직접 해야 할 설정은 [Google·Neon·Vercel 배포 안내](docs/DEPLOYMENT.md)를 따르세요. 구현 구조와 검증은 [인증·DB 문서](docs/AUTH-IMPLEMENTATION.md)에 정리되어 있습니다. 새 관리자 화면은 `/admin`, 로그인은 `/login`, 개인정보 안내는 `/privacy`입니다.
 

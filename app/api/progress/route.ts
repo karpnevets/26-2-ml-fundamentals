@@ -6,7 +6,7 @@ import { validProgressChange } from "@/lib/progress-policy";
 import { readProgress, writeProgress } from "@/lib/progress-repository";
 import { query } from "@/lib/query";
 import { json, smallJson } from "@/lib/http";
-import { courseAccess } from "@/lib/course";
+import { courseAccess, courseCatalog } from "@/lib/course";
 export const dynamic = "force-dynamic";
 export async function GET() {
   try {
@@ -14,9 +14,13 @@ export async function GET() {
     if (!user) return json({ error: "로그인이 필요합니다." }, 401);
     const limited = await requestLimit(user.id, "read");
     if (limited) return limited;
+    const { weeks } = await courseAccess();
     return json({
       ownerId: user.id,
       values: await readProgress(query, user.id),
+      itemIds: learningItems(await courseCatalog())
+        .filter((item) => weeks.includes(item.week))
+        .map((item) => item.id),
     });
   } catch {
     return json({ error: "학습 기록을 불러오지 못했습니다." }, 503);
@@ -35,11 +39,12 @@ export async function PATCH(request: Request) {
       );
     const limited = await requestLimit(user.id, "write");
     if (limited) return limited;
+    const items = learningItems(await courseCatalog());
     let change;
     try {
       change = validProgressChange(
         await smallJson(request),
-        new Set(learningItems().map((i) => i.id)),
+        new Set(items.map((i) => i.id)),
       );
     } catch {
       return json({ error: "잘못된 요청입니다." }, 400);
@@ -50,7 +55,7 @@ export async function PATCH(request: Request) {
         400,
       );
     const { weeks } = await courseAccess();
-    const item = learningItems().find((i) => i.id === change.id);
+    const item = items.find((i) => i.id === change.id);
     if (!item || !weeks.includes(item.week))
       return json({ error: "먼저 해당 주차의 잠금을 해제하세요." }, 403);
     await writeProgress(query, user.id, change.id, change.completed);

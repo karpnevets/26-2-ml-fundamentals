@@ -4,6 +4,7 @@ import { dashboardRows } from "@/lib/progress-repository";
 import { learningItems } from "@/lib/learning-items";
 import { summarizeLearners, learnersCsv } from "@/lib/admin-summary";
 import { json } from "@/lib/http";
+import { courseCatalog } from "@/lib/course";
 export const dynamic = "force-dynamic";
 export async function GET() {
   try {
@@ -12,7 +13,10 @@ export async function GET() {
     if (!user.isAdmin) return json({ error: "관리자 권한이 필요합니다." }, 403);
     return new Response(
       learnersCsv(
-        summarizeLearners(await dashboardRows(query), learningItems()),
+        summarizeLearners(
+          await dashboardRows(query),
+          learningItems(await courseCatalog()),
+        ),
       ),
       {
         headers: {

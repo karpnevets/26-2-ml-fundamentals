@@ -4,6 +4,8 @@ export type Lesson = {
   title: string;
   question: string;
   concepts: string[];
+  conceptIds?: string[];
+  conceptRevision?: number;
   estimated_time: string;
   body: string;
 };

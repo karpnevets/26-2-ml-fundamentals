@@ -5,6 +5,9 @@ import { json, smallJson } from "@/lib/http";
 import { validWeek, validateQuiz } from "@/lib/course-policy";
 import { hashPassword } from "@/lib/quiz-password";
 import { validColabUrl } from "@/lib/colab";
+import { courseCatalog } from "@/lib/course";
+import { conceptEntries, validateConceptDraft } from "@/lib/concepts";
+import { saveConcepts } from "@/lib/concept-repository";
 export const dynamic = "force-dynamic";
 export async function PUT(
   request: Request,
@@ -23,6 +26,28 @@ export async function PUT(
       data = await smallJson(request, 600000);
     } catch {
       return json({ error: "입력 크기 또는 형식을 확인하세요." }, 400);
+    }
+    if (data?.kind === "concepts") {
+      const lesson = (await courseCatalog()).find((w) => w.week === week)!;
+      const draft = validateConceptDraft(data, conceptEntries(lesson));
+      if (!draft)
+        return json(
+          {
+            error:
+              "개념은 1–60개, 이름은 중복 없이 1–100자로 입력하세요. 삭제된 항목은 새로 추가해 주세요.",
+          },
+          400,
+        );
+      const result = await saveConcepts(query, week, draft);
+      if (!result)
+        return json(
+          {
+            error:
+              "다른 창에서 개념 목록을 수정했습니다. 내용을 복사한 뒤 새로고침해 주세요.",
+          },
+          409,
+        );
+      return json({ ok: true, ...result });
     }
     let saved;
     if (data?.kind === "lesson") {

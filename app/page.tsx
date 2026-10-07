@@ -1,16 +1,15 @@
 import Link from "next/link";
-import { lessons } from "@/lib/content";
 import {
   OverallProgress,
   WeekStatus,
   ContinueLearning,
 } from "@/components/progress";
-import { courseAccess } from "@/lib/course";
+import { courseAccess, courseCatalog } from "@/lib/course";
 import { WeekLock } from "@/components/week-lock";
 export const dynamic = "force-dynamic";
 export default async function Home() {
   const { weeks, completed } = await courseAccess();
-  const all = lessons();
+  const all = await courseCatalog();
   return (
     <div className="page home">
       <div className="course-meta">
@@ -31,12 +30,20 @@ export default async function Home() {
           <OverallProgress
             weeks={all
               .filter((w) => weeks.includes(w.week))
-              .map(({ week, concepts }) => ({ week, concepts }))}
+              .map(({ week, concepts, conceptIds }) => ({
+                week,
+                concepts,
+                conceptIds,
+              }))}
           />
           <ContinueLearning
             weeks={all
               .filter((w) => weeks.includes(w.week))
-              .map(({ week, concepts }) => ({ week, concepts }))}
+              .map(({ week, concepts, conceptIds }) => ({
+                week,
+                concepts,
+                conceptIds,
+              }))}
           />
           <span className="hero-caption">비전공자 환영 · 기초부터 함께</span>
         </div>
@@ -79,7 +86,11 @@ export default async function Home() {
                   <span className="eyebrow">
                     WEEK {String(w.week).padStart(2, "0")}
                   </span>
-                  <WeekStatus week={w.week} concepts={w.concepts} />
+                  <WeekStatus
+                    week={w.week}
+                    concepts={w.concepts}
+                    conceptIds={w.conceptIds}
+                  />
                 </div>
                 <span className="path-number">
                   {String(i + 1).padStart(2, "0")}
