@@ -42,7 +42,7 @@ const stubs = {
     "export function notFound() { throw new Error('unexpected notFound'); }",
   "@/lib/course": `export async function courseAccess(){return {weeks:[0,1,2],completed:[0,1]};} export async function editedLessons(){return [${JSON.stringify(lesson)},${JSON.stringify(lesson)},${JSON.stringify(lesson)}];}`,
   "@/lib/course-documents":
-    "export async function lessonContextForWeek(){return {why:'질문',previous:'이전 개념',prerequisite:'필요한 개념'};} export async function glossaryForWeeks(){return [];}",
+    "export async function lessonContextForWeek(){return {why:'질문',previous:'이전 개념',prerequisite:'필요한 개념',terms:[],revision:0};} export async function glossaryForWeeks(){return [];}",
   "@/lib/concepts": "export function conceptEntries(){return [];}",
   "@/components/assignments": "export function Assignments(){return null;}",
   "@/components/interactive":

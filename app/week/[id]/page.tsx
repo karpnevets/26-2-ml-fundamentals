@@ -1,12 +1,12 @@
-import { lessonContextForWeek, glossaryForWeeks } from "@/lib/course-documents";
+import { lessonContextForWeek } from "@/lib/course-documents";
 import { Assignments } from "@/components/assignments";
 import { TableOfContents } from "@/components/table-of-contents";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { lessons, sections } from "@/lib/content";
-import { LessonMarkdown, WhyBox } from "@/components/markdown";
+import { LessonMarkdown } from "@/components/markdown";
+import { LessonIntroPreview } from "@/components/lesson-intro-preview";
 import { InlineMarkdown } from "@/components/inline-markdown";
-import { TermChip } from "@/components/interactive";
 import { ProgressCheck, WeekStatus } from "@/components/progress";
 import { conceptEntries } from "@/lib/concepts";
 import { WeekPlayground } from "@/components/playgrounds";
@@ -53,8 +53,7 @@ export default async function Week({
   const all = await editedLessons();
   const w = all.find((w) => String(w.week) === id);
   if (!w) notFound();
-  const context = await lessonContextForWeek(w.week);
-  const glossary = await glossaryForWeeks(weeks);
+  const context = await lessonContextForWeek(w.week, w.concepts);
   const parts = sections(w.body).filter(
     (s) => weeks.includes(w.week + 1) || !s.title.includes("Preview"),
   );
@@ -115,28 +114,7 @@ export default async function Week({
         />
         <article className="lesson-content">
           <section id="why">
-            <WhyBox>{context.why}</WhyBox>
-            <p className="connection">
-              <strong>이전 개념과 연결 · </strong>
-              {context.previous}
-            </p>
-            <p className="connection">
-              <strong>이번 주에 필요한 것 · </strong>
-              {context.prerequisite}
-            </p>
-            <div className="term-row">
-              {w.concepts.map((c) => (
-                <TermChip
-                  key={c}
-                  term={c}
-                  definition={
-                    glossary.find(
-                      (t) => t.term.toLowerCase() === c.toLowerCase(),
-                    )?.definition
-                  }
-                />
-              ))}
-            </div>
+            <LessonIntroPreview intro={context} />
           </section>
           <div id="experiment">
             {!w.body.includes("```visualization") && (

@@ -33,6 +33,10 @@ export default async function Page() {
           암호를 설정한 뒤 공개하세요.
         </p>
         <p>
+          각 주차의 편집 화면에서 소개 문구, 용어 설명과 개념 체크 목록도 수정할
+          수 있습니다.
+        </p>
+        <p>
           <Link className="secondary" href="/admin/assignments">
             선택 과제 관리 →
           </Link>

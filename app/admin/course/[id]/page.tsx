@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { currentActor } from "@/lib/auth/actor";
-import { originalLesson } from "@/lib/course-documents";
+import { originalLesson, lessonContextForWeek } from "@/lib/course-documents";
 import { courseCatalog } from "@/lib/course";
 import { conceptEntries } from "@/lib/concepts";
 import { query } from "@/lib/query";
@@ -65,6 +65,7 @@ export default async function Page({
         hasPassword={Boolean(quiz?.has_password)}
         initialConcepts={conceptEntries(lesson)}
         conceptRevision={lesson.conceptRevision ?? 0}
+        initialIntro={await lessonContextForWeek(lesson.week, lesson.concepts)}
       />
     </div>
   );

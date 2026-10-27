@@ -18,6 +18,7 @@
     "check:course-browser": "node scripts/course-browser-check.mjs",
     "check:diagrams-browser": "node scripts/diagrams-browser-check.mjs",
     "check:concepts-browser": "node scripts/concepts-browser-check.mjs",
+    "check:intro-browser": "node scripts/intro-browser-check.mjs",
     "check:headings-browser": "node scripts/headings-browser-check.mjs"
   },
   "dependencies": {

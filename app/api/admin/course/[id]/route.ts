@@ -8,6 +8,8 @@ import { validColabUrl } from "@/lib/colab";
 import { courseCatalog } from "@/lib/course";
 import { conceptEntries, validateConceptDraft } from "@/lib/concepts";
 import { saveConcepts } from "@/lib/concept-repository";
+import { validateLessonIntro } from "@/lib/lesson-intro";
+import { saveLessonIntro } from "@/lib/lesson-intro-repository";
 export const dynamic = "force-dynamic";
 export async function PUT(
   request: Request,
@@ -26,6 +28,27 @@ export async function PUT(
       data = await smallJson(request, 600000);
     } catch {
       return json({ error: "입력 크기 또는 형식을 확인하세요." }, 400);
+    }
+    if (data?.kind === "intro") {
+      const draft = validateLessonIntro(data);
+      if (!draft)
+        return json(
+          {
+            error:
+              "문구와 용어 설명은 각각 5,000자 이하, 용어는 중복 없이 최대 60개·이름은 1–100자로 입력하세요.",
+          },
+          400,
+        );
+      const revision = await saveLessonIntro(query, week, draft);
+      if (revision === null)
+        return json(
+          {
+            error:
+              "다른 창에서 소개 문구·용어를 수정했습니다. 작성 내용을 복사한 뒤 새로고침해 주세요.",
+          },
+          409,
+        );
+      return json({ ok: true, revision });
     }
     if (data?.kind === "concepts") {
       const lesson = (await courseCatalog()).find((w) => w.week === week)!;

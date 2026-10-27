@@ -67,8 +67,8 @@ export function GlossarySearch({
         {list.map((t) => (
           <article
             className="panel"
-            id={t.term.toLowerCase().replaceAll(" ", "-")}
-            key={t.term}
+            id={`w${t.week}-${t.term.toLowerCase().replaceAll(" ", "-")}`}
+            key={`${t.week}:${t.term}`}
           >
             <span className="eyebrow">WEEK {t.week}</span>
             <h2>{t.term}</h2>

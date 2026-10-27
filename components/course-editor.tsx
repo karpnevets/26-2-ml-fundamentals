@@ -6,6 +6,8 @@ import type { QuizQuestion } from "@/lib/course-policy";
 import { defaultColabUrl } from "@/lib/colab";
 import { ConceptEditor } from "./concept-editor";
 import type { Concept } from "@/lib/concepts";
+import { LessonIntroEditor } from "./lesson-intro-editor";
+import type { LessonIntro } from "@/lib/lesson-intro";
 type Quiz = {
   questions: QuizQuestion[];
   instructions: string;
@@ -22,6 +24,7 @@ export function CourseEditor({
   hasPassword,
   initialConcepts = [],
   conceptRevision = 0,
+  initialIntro,
 }: {
   week: number;
   original: string;
@@ -32,8 +35,9 @@ export function CourseEditor({
   hasPassword: boolean;
   initialConcepts?: Concept[];
   conceptRevision?: number;
+  initialIntro?: LessonIntro;
 }) {
-  const [tab, setTab] = useState<"lesson" | "quiz" | "concepts">(
+  const [tab, setTab] = useState<"lesson" | "quiz" | "concepts" | "intro">(
     week >= 2 ? "quiz" : "lesson",
   );
   const [body, setBody] = useState(initialBody),
@@ -49,8 +53,9 @@ export function CourseEditor({
     [dirtyLesson, setDirtyLesson] = useState(false),
     [dirtyQuiz, setDirtyQuiz] = useState(false),
     [dirtyConcepts, setDirtyConcepts] = useState(false),
+    [dirtyIntro, setDirtyIntro] = useState(false),
     [preview, setPreview] = useState(false);
-  const dirty = dirtyLesson || dirtyQuiz || dirtyConcepts;
+  const dirty = dirtyLesson || dirtyQuiz || dirtyConcepts || dirtyIntro;
   function setDirty(value: boolean) {
     if (tab === "lesson") setDirtyLesson(value);
     else setDirtyQuiz(value);
@@ -116,6 +121,14 @@ export function CourseEditor({
   return (
     <fieldset disabled={busy} className="editor-form">
       <div className="lab-tabs">
+        {initialIntro && (
+          <button
+            aria-pressed={tab === "intro"}
+            onClick={() => setTab("intro")}
+          >
+            소개 문구·용어
+          </button>
+        )}
         <button
           aria-pressed={tab === "lesson"}
           onClick={() => {
@@ -154,6 +167,16 @@ export function CourseEditor({
           onBusy={setBusy}
         />
       </div>
+      {initialIntro && (
+        <div hidden={tab !== "intro"}>
+          <LessonIntroEditor
+            week={week}
+            initial={initialIntro}
+            onDirty={setDirtyIntro}
+            onBusy={setBusy}
+          />
+        </div>
+      )}
       {tab === "lesson" ? (
         <>
           <label className="editor-field">
