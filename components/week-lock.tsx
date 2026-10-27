@@ -106,8 +106,11 @@ export function WeekLock({
                 암호
                 <input
                   autoFocus
-                  type="password"
+                  type="text"
                   autoComplete="off"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                   value={password}
                   maxLength={200}
                   required

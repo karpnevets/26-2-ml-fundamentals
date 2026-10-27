@@ -348,8 +348,11 @@ export function CourseEditor({
           <label className="editor-field">
             실제 잠금 해제 암호
             <input
-              type="password"
-              autoComplete="new-password"
+              type="text"
+              autoComplete="off"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               value={password}
               maxLength={200}
               placeholder={
