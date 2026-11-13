@@ -2,18 +2,23 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import type { WeekAccessRule } from "@/lib/course-policy";
 export function WeekLock({
   week,
   canUnlock = false,
+  rule,
 }: {
   week: number;
   canUnlock?: boolean;
+  rule?: WeekAccessRule;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [password, setPassword] = useState(""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   const router = useRouter();
+  const needsQuiz = rule?.quizRequired ?? true;
+  const prerequisite = rule?.prerequisite ?? week - 1;
   return (
     <>
       <button
@@ -42,9 +47,11 @@ export function WeekLock({
         </svg>
         <strong>잠긴 주차</strong>
         <span>
-          {canUnlock
-            ? "암호를 맞추면 열립니다"
-            : `${week - 1}주차 학습 완료 후 열 수 있습니다`}
+          {!needsQuiz
+            ? `${prerequisite}주차 학습을 완료하면 자동으로 열립니다`
+            : canUnlock
+              ? "암호를 맞추면 열립니다"
+              : `${prerequisite}주차 학습 완료 후 열 수 있습니다`}
         </span>
       </button>
       <dialog
@@ -64,20 +71,22 @@ export function WeekLock({
         </button>
         <h2 id={`unlock-title-${week}`}>{week}주차 잠금 해제</h2>
         <p>
-          {canUnlock
-            ? "직전 주차의 퀴즈를 풀어 암호를 완성하세요."
-            : `Week ${week - 1}의 개념 체크를 모두 완료하면 암호를 입력할 수 있습니다.`}
+          {!needsQuiz
+            ? `학교 계정으로 로그인하고 ${prerequisite}주차의 개념 체크를 모두 완료하면 자동으로 열립니다.`
+            : canUnlock
+              ? "직전 주차의 퀴즈를 풀어 암호를 완성하세요."
+              : `Week ${prerequisite}의 개념 체크를 모두 완료하면 암호를 입력할 수 있습니다.`}
         </p>
-        {!canUnlock && (
+        {(!needsQuiz || !canUnlock) && (
           <Link
             className="primary"
-            href={`/week/${week - 1}`}
+            href={`/week/${prerequisite}`}
             onClick={() => dialog.current?.close()}
           >
-            직전 주차 학습하기 →
+            {prerequisite}주차 학습하기 →
           </Link>
         )}
-        {canUnlock && (
+        {needsQuiz && canUnlock && (
           <>
             <form
               onSubmit={async (e) => {

@@ -1,10 +1,59 @@
 import type { Query } from "./progress-repository";
-import { accessibleWeeks } from "./course-policy";
+import {
+  accessibleWeeks,
+  weekAccessRule,
+  type WeekAccessRules,
+} from "./course-policy";
 import { matchesPassword } from "./quiz-password";
 import { readProgress } from "./progress-repository";
 import { completedWeeks } from "./completion";
 import { lessons } from "./content";
 import { readConceptLessons } from "./concept-repository";
+import type { ConceptWeek } from "./concepts";
+import { readWeekAccessRules } from "./week-access-repository";
+
+async function readUnlockedWeeks(query: Query, userId: string) {
+  const rows = await query(
+    "SELECT week FROM week_unlocks WHERE user_id=$1::uuid",
+    [userId],
+  );
+  return rows.map((row) => Number(row.week));
+}
+
+export async function learnerAccess(
+  query: Query,
+  userId: string,
+  catalog: ConceptWeek[],
+  rules: WeekAccessRules,
+) {
+  const unlocked = await readUnlockedWeeks(query, userId);
+  const weeks = accessibleWeeks(unlocked);
+  const completed = completedWeeks(await readProgress(query, userId), catalog);
+  const autoUnlocked: number[] = [];
+  for (let week = 2; week <= 8; week++) {
+    const rule = weekAccessRule(rules, week);
+    if (
+      !rule.quizRequired &&
+      !weeks.includes(week) &&
+      weeks.includes(rule.prerequisite) &&
+      completed.includes(rule.prerequisite)
+    ) {
+      weeks.push(week);
+      autoUnlocked.push(week);
+    }
+  }
+  if (autoUnlocked.length) {
+    await query(
+      "INSERT INTO week_unlocks(user_id,week) SELECT $1::uuid, unnest($2::int[]) ON CONFLICT DO NOTHING",
+      [userId, autoUnlocked],
+    );
+  }
+  return {
+    weeks: accessibleWeeks(weeks),
+    completed: completed.filter((week) => weeks.includes(week)),
+  };
+}
+
 export async function unlockWeek(
   query: Query,
   userId: string,
@@ -12,24 +61,22 @@ export async function unlockWeek(
   password: string,
   admin = false,
 ) {
-  const rows = await query(
-    "SELECT week FROM week_unlocks WHERE user_id=$1::uuid",
-    [userId],
-  );
-  const weeks = accessibleWeeks(
-    rows.map((r) => Number(r.week)),
-    admin,
-  );
-  if (!weeks.includes(week - 1))
-    return { error: "직전 주차를 먼저 열어 주세요.", status: 403 };
+  const rules = await readWeekAccessRules(query);
+  const rule = weekAccessRule(rules, week);
+  if (!rule.quizRequired)
+    return { error: "해금 퀴즈가 없는 주차입니다.", status: 404 };
+  const { weeks, completed } = admin
+    ? { weeks: accessibleWeeks([], true), completed: [] }
+    : await learnerAccess(
+        query,
+        userId,
+        await readConceptLessons(query, lessons()),
+        rules,
+      );
   if (weeks.includes(week)) return { ok: true, status: 200 };
-  if (
-    !admin &&
-    !completedWeeks(
-      await readProgress(query, userId),
-      await readConceptLessons(query, lessons()),
-    ).includes(week - 1)
-  )
+  if (!weeks.includes(rule.prerequisite))
+    return { error: "직전 주차를 먼저 열어 주세요.", status: 403 };
+  if (!completed.includes(rule.prerequisite))
     return {
       error: "직전 주차의 개념 체크를 모두 완료한 뒤 암호를 입력해 주세요.",
       status: 403,

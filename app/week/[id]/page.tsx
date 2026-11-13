@@ -13,6 +13,7 @@ import { WeekPlayground } from "@/components/playgrounds";
 import { ResNetRecap } from "@/components/resnet-recap";
 import { courseAccess, editedLessons } from "@/lib/course";
 import { WeekLock } from "@/components/week-lock";
+import { weekAccessRule } from "@/lib/course-policy";
 export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
@@ -34,19 +35,22 @@ export default async function Week({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { weeks, completed } = await courseAccess();
+  const { weeks, completed, rules } = await courseAccess();
   if (!lessons().some((w) => String(w.week) === id)) notFound();
+  const rule = weekAccessRule(rules, Number(id));
   if (!weeks.includes(Number(id)))
     return (
       <div className="page narrow">
         <h1>Week {id}</h1>
         <p>
-          직전 주차의 개념 체크를 모두 완료한 뒤, 퀴즈로 암호를 찾아 잠금을
-          해제하세요.
+          {rule.quizRequired
+            ? "직전 주차의 개념 체크를 모두 완료한 뒤, 퀴즈로 암호를 찾아 잠금을 해제하세요."
+            : `학교 계정에 ${rule.prerequisite}주차 개념 체크를 모두 저장하면 자동으로 열립니다.`}
         </p>
         <WeekLock
           week={Number(id)}
-          canUnlock={completed.includes(Number(id) - 1)}
+          canUnlock={completed.includes(rule.prerequisite)}
+          rule={rule}
         />
       </div>
     );
@@ -183,7 +187,11 @@ export default async function Week({
             {w.week > 0 ? (
               <Link href={`/week/${w.week - 1}`}>
                 ← Week {w.week - 1}
-                <strong>{all[w.week - 1].title}</strong>
+                <strong>
+                  {weeks.includes(w.week - 1)
+                    ? all[w.week - 1].title
+                    : "🔒 잠긴 주차"}
+                </strong>
               </Link>
             ) : (
               <Link href="/">← 전체 커리큘럼</Link>

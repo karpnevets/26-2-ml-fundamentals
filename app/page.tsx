@@ -6,9 +6,10 @@ import {
 } from "@/components/progress";
 import { courseAccess, courseCatalog } from "@/lib/course";
 import { WeekLock } from "@/components/week-lock";
+import { weekAccessRule } from "@/lib/course-policy";
 export const dynamic = "force-dynamic";
 export default async function Home() {
-  const { weeks, completed } = await courseAccess();
+  const { weeks, completed, rules } = await courseAccess();
   const all = await courseCatalog();
   return (
     <div className="page home">
@@ -75,6 +76,7 @@ export default async function Home() {
                 key={w.week}
                 week={w.week}
                 canUnlock={completed.includes(w.week - 1)}
+                rule={weekAccessRule(rules, w.week)}
               />
             ) : (
               <Link
@@ -131,8 +133,8 @@ export default async function Home() {
         <details>
           <summary>모든 과제를 해야 하나요?</summary>
           <p>
-            본문 연습문제와 선택 프로젝트는 필수가 아닙니다. 해당 주차의 개념
-            체크를 모두 완료하면 다음 주차의 암호를 입력할 수 있습니다. Week 0은
+            본문 연습문제와 선택 프로젝트는 필수가 아닙니다. 잠긴 주차의
+            카드에서 필요한 개념 체크와 퀴즈 여부를 확인할 수 있습니다. Week 0은
             선택 준비 과정입니다.
           </p>
         </details>

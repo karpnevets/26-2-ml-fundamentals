@@ -2,7 +2,12 @@ import { currentActor } from "@/lib/auth/actor";
 import { sameOrigin } from "@/lib/auth/policy";
 import { query } from "@/lib/query";
 import { json, smallJson } from "@/lib/http";
-import { validWeek, validateQuiz } from "@/lib/course-policy";
+import {
+  validWeek,
+  validateQuiz,
+  validateWeekAccessRule,
+} from "@/lib/course-policy";
+import { saveWeekAccessRule } from "@/lib/week-access-repository";
 import { hashPassword } from "@/lib/quiz-password";
 import { validColabUrl } from "@/lib/colab";
 import { courseCatalog } from "@/lib/course";
@@ -28,6 +33,18 @@ export async function PUT(
       data = await smallJson(request, 600000);
     } catch {
       return json({ error: "입력 크기 또는 형식을 확인하세요." }, 400);
+    }
+    if (data?.kind === "access") {
+      const rule = validateWeekAccessRule(week, data);
+      if (!rule)
+        return json({ error: "해금 방식과 선행 주차를 확인하세요." }, 400);
+      const revision = await saveWeekAccessRule(query, week, rule);
+      if (revision === null)
+        return json(
+          { error: "다른 창에서 해금 설정을 변경했습니다. 새로고침해 주세요." },
+          409,
+        );
+      return json({ ok: true, revision });
     }
     if (data?.kind === "intro") {
       const draft = validateLessonIntro(data);

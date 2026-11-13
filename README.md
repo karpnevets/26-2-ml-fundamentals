@@ -67,7 +67,7 @@ qa/                     # 브라우저 검증 스크린샷
 
 주차별 실행 가능한 노트북은 `notebooks/week-0.ipynb`–`week-8.ipynb`입니다. 열린 강의에서 **Colab에서 실습하기**로 접근합니다. 관리자 본문 탭에서 링크를 변경/숨기려면 `db/migrations/003_colab_links.sql`을 한 번 적용하세요. 이번 개정에서는 최신 `db/setup.sql` 전체를 적용하세요. [노트북 사용법](notebooks/README.md)
 
-2–8주차는 계정별 퀴즈 암호로 순차 해제합니다. 관리자 `/admin/course`에서 회차별 퀴즈, Markdown 본문, 개념 체크 목록을 편집하고 인터랙티브 실험을 삽입할 수 있습니다. 개념 체크 목록은 이름 수정·추가·삭제·순서 변경을 지원하며 본문과 별도로 저장합니다. 기존 DB에는 `db/migrations/002_course_editor.sql`을 적용하세요. 개념 편집은 기존 `course_documents`와 `learning_items`를 사용하므로 추가 migration이 필요 없습니다. [퀴즈·편집 사용법](docs/COURSE-EDITOR.md)을 확인하세요.
+2–8주차는 기본적으로 직전 주차 개념 체크와 퀴즈 암호로 엽니다. 관리자 `/admin/course`에서 각 주차의 **해금 설정**을 열면 퀴즈를 끄고 자동 해금에 필요한 완료 주차를 선택할 수 있습니다. 같은 화면에서 퀴즈, Markdown 본문, 개념 체크 목록도 편집할 수 있습니다. 해금 설정은 기존 DB에 저장됩니다. [퀴즈·편집 사용법](docs/COURSE-EDITOR.md)을 확인하세요.
 
 직접 해야 할 설정은 [Google·Neon·Vercel 배포 안내](docs/DEPLOYMENT.md)를 따르세요. 구현 구조와 검증은 [인증·DB 문서](docs/AUTH-IMPLEMENTATION.md)에 정리되어 있습니다. 새 관리자 화면은 `/admin`, 로그인은 `/login`, 개인정보 안내는 `/privacy`입니다.
 

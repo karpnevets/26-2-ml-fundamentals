@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { courseAccess } from "@/lib/course";
 import { query } from "@/lib/query";
 import {
   validWeek,
+  weekAccessRule,
   publicQuestions,
   type QuizQuestion,
 } from "@/lib/course-policy";
@@ -21,7 +22,9 @@ export default async function Page({
 }) {
   const week = Number((await params).id);
   if (!validWeek(week, 2)) notFound();
-  const { user, weeks, completed } = await courseAccess();
+  const { user, weeks, completed, rules } = await courseAccess();
+  const rule = weekAccessRule(rules, week);
+  if (!rule.quizRequired) redirect(`/week/${week}`);
   if (!user)
     return (
       <div className="page narrow">
@@ -34,7 +37,7 @@ export default async function Page({
         </Link>
       </div>
     );
-  if (!weeks.includes(week - 1))
+  if (!weeks.includes(week - 1) && !weeks.includes(week))
     return (
       <div className="page narrow">
         <h1>직전 주차를 먼저 열어 주세요.</h1>

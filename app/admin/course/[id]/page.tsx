@@ -2,12 +2,12 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { currentActor } from "@/lib/auth/actor";
 import { originalLesson, lessonContextForWeek } from "@/lib/course-documents";
-import { courseCatalog } from "@/lib/course";
+import { courseAccessRules, courseCatalog } from "@/lib/course";
 import { conceptEntries } from "@/lib/concepts";
 import { query } from "@/lib/query";
 import { quizTemplate } from "@/lib/quiz-templates";
 import { CourseEditor } from "@/components/course-editor";
-import type { QuizQuestion } from "@/lib/course-policy";
+import { weekAccessRule, type QuizQuestion } from "@/lib/course-policy";
 import { defaultColabUrl } from "@/lib/colab";
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -63,6 +63,11 @@ export default async function Page({
         bodyRevision={Number(edit?.revision ?? 0)}
         initialQuiz={initialQuiz}
         hasPassword={Boolean(quiz?.has_password)}
+        initialAccess={
+          lesson.week >= 2
+            ? weekAccessRule(await courseAccessRules(), lesson.week)
+            : undefined
+        }
         initialConcepts={conceptEntries(lesson)}
         conceptRevision={lesson.conceptRevision ?? 0}
         initialIntro={await lessonContextForWeek(lesson.week, lesson.concepts)}

@@ -13,6 +13,45 @@ export type QuizDraft = {
 };
 export const validWeek = (n: number, min = 0) =>
   Number.isInteger(n) && n >= min && n <= 8;
+export type WeekAccessRule = {
+  quizRequired: boolean;
+  prerequisite: number;
+  revision: number;
+};
+export type WeekAccessRules = Partial<Record<number, WeekAccessRule>>;
+
+export function weekAccessRule(rules: WeekAccessRules, week: number) {
+  return (
+    rules[week] ?? {
+      quizRequired: true,
+      prerequisite: week - 1,
+      revision: 0,
+    }
+  );
+}
+
+export function validateWeekAccessRule(
+  week: number,
+  value: unknown,
+): WeekAccessRule | null {
+  if (!validWeek(week, 2) || !value || typeof value !== "object") return null;
+  const { quizRequired, prerequisite, revision } =
+    value as Partial<WeekAccessRule>;
+  if (
+    typeof quizRequired !== "boolean" ||
+    typeof prerequisite !== "number" ||
+    !Number.isInteger(prerequisite) ||
+    prerequisite < 1 ||
+    prerequisite >= week ||
+    (quizRequired && prerequisite !== week - 1) ||
+    typeof revision !== "number" ||
+    !Number.isSafeInteger(revision) ||
+    revision < 0 ||
+    revision >= 2147483647
+  )
+    return null;
+  return { quizRequired, prerequisite, revision };
+}
 export function normalizePassword(value: string) {
   return value.normalize("NFKC").trim();
 }
@@ -83,8 +122,7 @@ export function validateQuiz(value: unknown): QuizDraft | null {
 export function accessibleWeeks(unlocked: number[], admin = false) {
   const result = [0, 1];
   for (let week = 2; week <= 8; week++) {
-    if (!admin && !unlocked.includes(week)) break;
-    result.push(week);
+    if (admin || unlocked.includes(week)) result.push(week);
   }
   return result;
 }

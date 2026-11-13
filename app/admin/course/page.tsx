@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { currentActor } from "@/lib/auth/actor";
 import { lessons } from "@/lib/content";
 import { query } from "@/lib/query";
+import { weekAccessRule } from "@/lib/course-policy";
+import { courseAccessRules } from "@/lib/course";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "퀴즈 · 본문 관리",
@@ -23,14 +25,15 @@ export default async function Page() {
   const edits = await query(
     "SELECT week,updated_at FROM lesson_edits WHERE to_jsonb(lesson_edits)->>'content_revision'='revised-v2'",
   );
+  const rules = await courseAccessRules();
   return (
     <div className="page narrow">
       <Link href="/admin">← 학습 현황</Link>
       <header className="subpage-header">
         <h1>회차별 퀴즈 · 본문 관리</h1>
         <p>
-          2–8주차는 직전 주차 복습 퀴즈로 엽니다. 퀴즈 초안을 검토하고 실제
-          암호를 설정한 뒤 공개하세요.
+          2~8주차의 편집 화면에서 해금 퀴즈 필요 여부와 자동 해금에 필요한 완료
+          주차를 설정할 수 있습니다.
         </p>
         <p>
           각 주차의 편집 화면에서 소개 문구, 용어 설명과 개념 체크 목록도 수정할
@@ -50,9 +53,11 @@ export default async function Page() {
           <p>
             {w.week < 2
               ? "잠금 없음"
-              : quizzes.find((q) => Number(q.week) === w.week)?.published
-                ? "퀴즈 공개 중"
-                : "퀴즈 비공개 · 학생 잠금 유지"}{" "}
+              : !weekAccessRule(rules, w.week).quizRequired
+                ? `${weekAccessRule(rules, w.week).prerequisite}주차 완료 후 자동 해금`
+                : quizzes.find((q) => Number(q.week) === w.week)?.published
+                  ? "퀴즈 공개 중"
+                  : "퀴즈 비공개 · 학생 잠금 유지"}{" "}
             ·{" "}
             {edits.some((e) => Number(e.week) === w.week)
               ? "편집한 본문 사용"

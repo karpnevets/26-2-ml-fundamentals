@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import { LessonMarkdown } from "./markdown";
 import { visualizationOptions } from "@/lib/visualizations";
-import type { QuizQuestion } from "@/lib/course-policy";
+import type { QuizQuestion, WeekAccessRule } from "@/lib/course-policy";
+import { WeekAccessEditor } from "./week-access-editor";
 import { defaultColabUrl } from "@/lib/colab";
 import { ConceptEditor } from "./concept-editor";
 import type { Concept } from "@/lib/concepts";
@@ -22,6 +23,7 @@ export function CourseEditor({
   bodyRevision,
   initialQuiz,
   hasPassword,
+  initialAccess,
   initialConcepts = [],
   conceptRevision = 0,
   initialIntro,
@@ -33,12 +35,20 @@ export function CourseEditor({
   bodyRevision: number;
   initialQuiz: Quiz;
   hasPassword: boolean;
+  initialAccess?: WeekAccessRule;
   initialConcepts?: Concept[];
   conceptRevision?: number;
   initialIntro?: LessonIntro;
 }) {
-  const [tab, setTab] = useState<"lesson" | "quiz" | "concepts" | "intro">(
-    week >= 2 ? "quiz" : "lesson",
+  const [access, setAccess] = useState(initialAccess);
+  const [tab, setTab] = useState<
+    "lesson" | "quiz" | "concepts" | "intro" | "access"
+  >(
+    week < 2
+      ? "lesson"
+      : initialAccess?.quizRequired === false
+        ? "access"
+        : "quiz",
   );
   const [body, setBody] = useState(initialBody),
     [revision, setRevision] = useState(bodyRevision);
@@ -54,8 +64,10 @@ export function CourseEditor({
     [dirtyQuiz, setDirtyQuiz] = useState(false),
     [dirtyConcepts, setDirtyConcepts] = useState(false),
     [dirtyIntro, setDirtyIntro] = useState(false),
+    [dirtyAccess, setDirtyAccess] = useState(false),
     [preview, setPreview] = useState(false);
-  const dirty = dirtyLesson || dirtyQuiz || dirtyConcepts || dirtyIntro;
+  const dirty =
+    dirtyLesson || dirtyQuiz || dirtyConcepts || dirtyIntro || dirtyAccess;
   function setDirty(value: boolean) {
     if (tab === "lesson") setDirtyLesson(value);
     else setDirtyQuiz(value);
@@ -143,7 +155,15 @@ export function CourseEditor({
         >
           학습 본문
         </button>
-        {week >= 2 && (
+        {initialAccess && (
+          <button
+            aria-pressed={tab === "access"}
+            onClick={() => setTab("access")}
+          >
+            해금 설정
+          </button>
+        )}
+        {week >= 2 && (access?.quizRequired !== false || dirtyQuiz) && (
           <button aria-pressed={tab === "quiz"} onClick={() => setTab("quiz")}>
             잠금 해제 퀴즈
           </button>
@@ -158,6 +178,17 @@ export function CourseEditor({
       <p role="status" className="editor-message">
         {message || (dirty ? "저장하지 않은 변경사항이 있습니다." : "")}
       </p>
+      {initialAccess && (
+        <div hidden={tab !== "access"}>
+          <WeekAccessEditor
+            week={week}
+            initial={initialAccess}
+            onDirty={setDirtyAccess}
+            onBusy={setBusy}
+            onSave={setAccess}
+          />
+        </div>
+      )}
       <div hidden={tab !== "concepts"}>
         <ConceptEditor
           week={week}

@@ -7,14 +7,22 @@ import {
   validateQuiz,
   publicQuestions,
   safeImage,
+  validateWeekAccessRule,
+  weekAccessRule,
 } from "../lib/course-policy";
 import { hashPassword, matchesPassword } from "../lib/quiz-password";
 import { quizTemplate } from "../lib/quiz-templates";
-import { unlockWeek } from "../lib/unlock-repository";
+import { learnerAccess, unlockWeek } from "../lib/unlock-repository";
 import type { Query } from "../lib/progress-repository";
-test("sequential access, safe quiz projection, publish validation and password normalization", () => {
-  assert.deepEqual(accessibleWeeks([4, 3]), [0, 1]);
-  assert.deepEqual(accessibleWeeks([2, 4]), [0, 1, 2]);
+import {
+  readWeekAccessRules,
+  saveWeekAccessRule,
+} from "../lib/week-access-repository";
+import { readConceptLessons } from "../lib/concept-repository";
+import { lessons } from "../lib/content";
+test("saved access, safe quiz projection, publish validation and password normalization", () => {
+  assert.deepEqual(accessibleWeeks([4, 3]), [0, 1, 3, 4]);
+  assert.deepEqual(accessibleWeeks([2, 4]), [0, 1, 2, 4]);
   assert.equal(accessibleWeeks([], true).length, 9);
   const hash = hashPassword("Ab12");
   assert(matchesPassword(" Ab１２ ", hash));
@@ -51,6 +59,89 @@ test("sequential access, safe quiz projection, publish validation and password n
     assert(
       !JSON.stringify(publicQuestions(draft.questions)).includes("answer"),
     );
+  }
+});
+
+test("per-week automatic unlock uses the chosen prerequisite and preserves grants", async () => {
+  const db = new PGlite();
+  try {
+    await db.exec(fs.readFileSync("db/setup.sql", "utf8"));
+    const query: Query = async (sql, values = []) =>
+      (await db.query<Record<string, unknown>>(sql, values)).rows;
+    const users = await query(
+      "INSERT INTO app_users(google_sub,email) VALUES('auto-a','auto-a@snu.ac.kr'),('auto-b','auto-b@snu.ac.kr') RETURNING id",
+    );
+    const [a, b] = users.map((user) => String(user.id));
+    const catalog = await readConceptLessons(query, lessons());
+    const grantThroughFive =
+      "INSERT INTO week_unlocks(user_id,week) SELECT $1::uuid, generate_series(2,5)";
+    const completeFive =
+      "INSERT INTO learning_progress(user_id,item_id,completed) SELECT $1::uuid,id,true FROM learning_items WHERE week=5 AND kind='concept'";
+    await query(grantThroughFive, [a]);
+    await query(completeFive, [b]);
+    const rule = { quizRequired: false, prerequisite: 5, revision: 0 };
+    assert.equal(validateWeekAccessRule(5, rule), null);
+    assert.equal(
+      validateWeekAccessRule(8, { ...rule, quizRequired: true }),
+      null,
+    );
+    assert.deepEqual(validateWeekAccessRule(8, rule), rule);
+    assert.equal(await saveWeekAccessRule(query, 6, rule), 1);
+    assert.equal(await saveWeekAccessRule(query, 8, rule), 1);
+    assert.equal(await saveWeekAccessRule(query, 8, rule), null);
+    let rules = await readWeekAccessRules(query);
+    assert.equal(weekAccessRule(rules, 7).quizRequired, true);
+    assert.deepEqual(
+      (await learnerAccess(query, a, catalog, rules)).weeks,
+      [0, 1, 2, 3, 4, 5],
+    );
+    assert.deepEqual(await learnerAccess(query, b, catalog, rules), {
+      weeks: [0, 1],
+      completed: [],
+    });
+    assert.equal((await unlockWeek(query, a, 8, "unused")).status, 404);
+
+    await query(completeFive, [a]);
+    assert.deepEqual(await learnerAccess(query, a, catalog, rules), {
+      weeks: [0, 1, 2, 3, 4, 5, 6, 8],
+      completed: [5],
+    });
+    assert.equal((await unlockWeek(query, a, 7, "unused")).status, 403);
+    assert.equal(await saveWeekAccessRule(query, 7, rule), 1);
+    rules = await readWeekAccessRules(query);
+    assert.equal(
+      (await learnerAccess(query, a, catalog, rules)).weeks.length,
+      9,
+    );
+    assert.equal(
+      await saveWeekAccessRule(query, 8, {
+        quizRequired: true,
+        prerequisite: 7,
+        revision: 1,
+      }),
+      2,
+    );
+    assert.equal(
+      await saveWeekAccessRule(query, 8, { ...rule, revision: 1 }),
+      null,
+    );
+    await query(
+      "UPDATE learning_progress SET completed=false WHERE user_id=$1::uuid",
+      [a],
+    );
+    assert.deepEqual(
+      await learnerAccess(query, a, catalog, await readWeekAccessRules(query)),
+      { weeks: [0, 1, 2, 3, 4, 5, 6, 7, 8], completed: [] },
+    );
+    await query(grantThroughFive, [b]);
+    assert.deepEqual(
+      (await learnerAccess(query, b, catalog, await readWeekAccessRules(query)))
+        .weeks,
+      [0, 1, 2, 3, 4, 5, 6, 7],
+    );
+    assert.equal((await query("SELECT * FROM quiz_attempts")).length, 0);
+  } finally {
+    await db.close();
   }
 });
 test("real PostgreSQL unlock isolation, order, rate limit, cooldown, persistence and migration rerun", async () => {
